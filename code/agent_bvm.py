@@ -14,6 +14,7 @@ class bvmAgent(Agent):
             num = round(self.random.uniform(0, 1), 2)
             self.opinions.append(num)
             self.initialOpinions.append(num)
+        self.updateOpinions()
 
     def updateOpinions(self):
         #sets the node attribute in network x graph for each issue

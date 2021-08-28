@@ -26,7 +26,6 @@ def get_avg_assort(model):
     uniformOpinion = True
     opinion = -1
     for i in range(0, model.num_issues):
-
         try:
             assort = nx.numeric_assortativity_coefficient(model.G, "iss_{}".format(i))
             assorts.append(assort)
@@ -119,6 +118,10 @@ def returnNonUniform(model):
 
     return counter
 
+def printAllAgentOpinions(model): 
+    for i in range(model.num_agents):
+        for j in range(model.num_issues):
+            print("Agent #{}, Issue #{}: {}".format(i, j, model.G.nodes[i]["agent"].opinions[j]))
 
 class bvmModel(Model):
 
@@ -128,7 +131,7 @@ class bvmModel(Model):
     # T: # of simulation iterations
     # C: comparison threshold for agents
 
-    def __init__(self, l_steps, n_agents, p, issues, t, c, seed=None):
+    def __init__(self, l_steps, n_agents, p, issues, c, seed=None):
         super().__init__()
         self.l_steps = l_steps
         self.num_agents = n_agents
@@ -150,12 +153,17 @@ class bvmModel(Model):
             agent = bvmAgent(i, self)
             self.G.nodes[i]["agent"] = agent
             self.schedule.add(agent)
+
+        reporters =  {"clustersforIssue_{}".format(i): lambda model, issueNum=i:getClustering(model,issueNum) for i in range(self.num_issues)}
         
         self.datacollector = DataCollector(
 
-            model_reporters={},
-            agent_reporters={"Opinions": "opinions"}
+                model_reporters=reporters,
+            agent_reporters={}
         )
+        
+        self.datacollector._new_model_reporter("assortativity", get_avg_assort)
+        self.datacollector._new_model_reporter("opinionClusters", returnNonUniform)
 
         self.datacollector.collect(self)
 
@@ -180,18 +188,16 @@ class bvmModel(Model):
 
         self.steps += 1
 
-test = bvmModel(150, 5, 0.25, 5, 0, 0.4)
 
-for i in range(test.num_agents):
-    for j in range(test.num_issues):
-        print("Agent #{}, Issue #{}: {}".format(i, j, test.G.nodes[i]["agent"].opinions[j]))
+#lsteps, agents, p, issues, cthresh
+test = bvmModel(150, 100, 0.15, 3, 0.10)
 
-for i in range(4):
+printAllAgentOpinions(test)
+
+for i in range(100):
     test.step()
 
-for i in range(test.num_agents):
-    for j in range(test.num_issues):
-        print("Agent #{}, Issue #{}: {}".format(i, j, test.G.nodes[i]["agent"].opinions[j]))
+printAllAgentOpinions(test)
 
-#df = test.datacollector.get_model_vars_dataframe()
-#print(df)
+df = test.datacollector.get_model_vars_dataframe()
+print(df)
