@@ -7,13 +7,11 @@ class bvmAgent(Agent):
 
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
-        self.unique_id = unique_id
         self.opinions = []
-        self.initialOpinions = []
         for i in range(int(self.model.num_issues)):
             num = round(self.random.uniform(0, 1), 2)
             self.opinions.append(num)
-            self.initialOpinions.append(num)
+        
         self.updateOpinions()
 
     def updateOpinions(self):

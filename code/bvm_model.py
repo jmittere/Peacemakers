@@ -15,9 +15,6 @@ import matplotlib.pyplot as plt
 warnings.simplefilter('error', RuntimeWarning)
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-def getStep(model):
-    return model.steps
-
 def getOpinion(model, agent_num, iss_num):
     return model.schedule.agents[agent_num].opinions[iss_num]
 
@@ -49,7 +46,7 @@ def get_avg_assort(model):
     return (sum(assorts) / len(assorts))
 
 
-def returnPersuasionsPerAgent(model):
+def returnPersuasionsPerCapita(model):
     return model.persuasions / model.num_agents
 
 def get_mean_opinion_var(model):
