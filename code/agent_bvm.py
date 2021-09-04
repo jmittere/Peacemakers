@@ -38,12 +38,44 @@ class bvmAgent(Agent):
         influencer_compare = self.model.G.nodes[influencer]["agent"].opinions[compare_index]
         influencer_persuade = self.model.G.nodes[influencer]["agent"].opinions[persuade_index]
         
-        #compares node and influencer opinions to see if node can be influenced 
-        if(abs(node_compare-influencer_compare) <= self.model.compare_threshold):
-            #node can be influenced, so set their new opinion as the average of their old opinion and influencer's opinion
+        #compares node and influencer opinions to see if node can be attracted 
+        if(abs(node_compare-influencer_compare) <= self.model.openness_threshold):
+            #node can be attracted, so set node's new opinion as the average of their old opinion and influencer's opinion
             self.opinions[persuade_index] = round((node_persuade + influencer_persuade)/2,2)
             if(abs(node_persuade - self.opinions[persuade_index]) < .03):
                 #doesn't count as persuasion
                 pass
             else:
                 self.model.persuasions+=1
+       
+        elif(abs(node_compare-influencer_compare) <= self.model.disgust_threshold):
+           #node can be repelled, so set node's new opinion as node's old opinion + the amount they would have been pulled towards influencer in an attraction
+            attractionOpinion = round((node_persuade + influencer_persuade)/2,2)
+            repulsionAmt = abs(attractionOpinion-node_persuade)
+            
+            self.model.repulsions+=1
+            #node's opinion is higher than influencer, so it should be pushed closer to 1
+            if(node_compare>influencer_compare):
+                self.opinions[persuade_index]+=repulsionAmt
+                if(self.opinions[persuade_index]>=1):
+                    self.opinions[persuade_index] = .99
+            
+            #node's opinion is lower than influencer, so it should be pushed closer to 0
+            elif(node_compare<influencer_compare):
+                self.opinions[persuade_index]-=repulsionAmt
+                if(self.opinions[persuade_index]<=0):
+                    self.opinions[persuade_index] = .01
+            else:
+                #this shouldnt happen
+                print("Node_compare: ", node_compare)
+                print("Influencer_compare: ", influencer_compare)
+                print('Error')
+                pass
+
+        else: #no attraction or repulsion
+            pass
+
+            
+
+
+

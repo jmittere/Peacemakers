@@ -120,22 +120,31 @@ def printAllAgentOpinions(model):
         for j in range(model.num_issues):
             print("Agent #{}, Issue #{}: {}".format(i, j, model.G.nodes[i]["agent"].opinions[j]))
 
+def getPersuasions(model):
+    return model.persuasions
+
+def getRepulsions(model):
+    return model.repulsions
+
+
 class bvmModel(Model):
 
     # N: # of agents
     # P: prob of edge for Erdos-renyi
     # I: # of issues for each agent
     # T: # of simulation iterations
-    # C: comparison threshold for agents
-
-    def __init__(self, l_steps, n_agents, p, issues, c, seed=None):
+    # C: openness threshold for agents
+    # D: disgust threshold for agents
+    def __init__(self, l_steps, n_agents, p, issues, c, d, seed=None):
         super().__init__()
         self.l_steps = l_steps
         self.num_agents = n_agents
         self.num_issues = issues
-        self.compare_threshold = c
+        self.openness_threshold = c
+        self.disgust_threshold = d
         self.schedule = RandomActivation(self)
         self.steps = 0
+        self.repulsions = 0
         self.persuasions = 0
         self.equilibriumCounter= 0
         self.running = True
@@ -161,6 +170,9 @@ class bvmModel(Model):
         
         self.datacollector._new_model_reporter("assortativity", get_avg_assort)
         self.datacollector._new_model_reporter("opinionClusters", returnNonUniform)
+        self.datacollector._new_model_reporter("persuasions", getPersuasions)
+        self.datacollector._new_model_reporter("repulsions", getRepulsions)
+
 
         self.datacollector.collect(self)
 
@@ -173,7 +185,6 @@ class bvmModel(Model):
             self.equilibriumCounter = 0
 
         self.datacollector.collect(self)
-        self.persuasions = 0
 
         # Stop if exceeds step limit
         if self.l_steps == self.steps + 1:
@@ -184,10 +195,9 @@ class bvmModel(Model):
             self.running = False
 
         self.steps += 1
-
 '''
-#lsteps, agents, p, issues, cthresh
-test = bvmModel(150, 100, 0.15, 3, 0.10)
+#lsteps, agents, p, issues, othresh, dthresh
+test = bvmModel(150, 100, 0.4, 3, 0.30, .50)
 
 #printAllAgentOpinions(test)
 
@@ -197,5 +207,5 @@ for i in range(100):
 #printAllAgentOpinions(test)
 
 df = test.datacollector.get_model_vars_dataframe()
-print(df)
+#print(df)
 '''
