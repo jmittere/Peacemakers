@@ -195,7 +195,6 @@ class bvmModel(Model):
             self.running = False
 
         self.steps += 1
-'''
 #lsteps, agents, p, issues, othresh, dthresh
 test = bvmModel(150, 100, 0.4, 3, 0.30, .50)
 
@@ -207,5 +206,4 @@ for i in range(100):
 #printAllAgentOpinions(test)
 
 df = test.datacollector.get_model_vars_dataframe()
-#print(df)
-'''
+print(df)

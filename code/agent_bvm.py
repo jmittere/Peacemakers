@@ -48,7 +48,7 @@ class bvmAgent(Agent):
             else:
                 self.model.persuasions+=1
        
-        elif(abs(node_compare-influencer_compare) <= self.model.disgust_threshold):
+        elif(abs(node_compare-influencer_compare) >= self.model.disgust_threshold):
            #node can be repelled, so set node's new opinion as node's old opinion + the amount they would have been pulled towards influencer in an attraction
             attractionOpinion = round((node_persuade + influencer_persuade)/2,2)
             repulsionAmt = abs(attractionOpinion-node_persuade)
