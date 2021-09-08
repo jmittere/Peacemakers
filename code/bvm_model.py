@@ -62,7 +62,7 @@ def avg_agt_opinion(x, i, model):
 # Return true if all agents have an identical opinion on this issue.
 def isIssueUniform(model, issueNum):
     return all([ math.isclose(model.schedule.agents[j].opinions[issueNum],
-            model.schedule.agents[0].opinions[issueNum]) ])
+            model.schedule.agents[0].opinions[issueNum]) for j in range(1, len(model.schedule.agents))])
 
 
 def getNumClusters(model, issueNum):
@@ -195,7 +195,7 @@ class bvmModel(Model):
 
         self.steps += 1
 #lsteps, agents, p, issues, othresh, dthresh
-test = bvmModel(150, 100, 0.4, 3, 0.30, .50)
+test = bvmModel(150, 10, 0.4, 3, 0.20, .70)
 
 #printAllAgentOpinions(test)
 

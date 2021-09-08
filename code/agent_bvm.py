@@ -4,6 +4,7 @@ from mesa import Agent
 import networkx as nx
 
 MIN_OPINION_MOVEMENT_FOR_PERSUASION = .03
+MIN_OPINION_MOVEMENT_FOR_DISGUST = .03
 
 class bvmAgent(Agent):
 
@@ -62,7 +63,7 @@ class bvmAgent(Agent):
             else:
                 self.model.persuasions+=1
 
-        elif (abs(my_compare_val-influencer_compare_val) <=
+        elif (abs(my_compare_val-influencer_compare_val) >=
             self.model.disgust_threshold):
 
             # The two agents are actually far apart enough on their comparison
@@ -73,21 +74,31 @@ class bvmAgent(Agent):
             # attraction.
             attractionOpinion = round((my_persuade_val +
                 influencer_persuade_val)/2,2)
-            repulsionAmt = abs(attractionOpinion-my_persuade_val)
+            repulsionAmt = round(abs(attractionOpinion-my_persuade_val),2)
 
-            self.model.repulsions+=1
-            if my_compare_val>influencer_compare_val:
+            if my_persuade_val>influencer_persuade_val:
                 # The agent's opinion is higher than the influencer's, so it
                 # should be pushed closer to 1.
                 self.opinions[persuade_index]+=repulsionAmt
+                self.opinions[persuade_index] = round(self.opinions[persuade_index],2)
                 if(self.opinions[persuade_index]>=1):
                     self.opinions[persuade_index] = .99
             else:
                 # The agent's opinion is lower than the influencer's, so it
                 # should be pushed closer to 0.
                 self.opinions[persuade_index]-=repulsionAmt
+                self.opinions[persuade_index] = round(self.opinions[persuade_index],2)
                 if(self.opinions[persuade_index]<=0):
                     self.opinions[persuade_index] = .01
+             
+            if (abs(my_persuade_val - self.opinions[persuade_index]) <
+                MIN_OPINION_MOVEMENT_FOR_DISGUST):
+                #doesn't count as repulsion
+                pass
+            else:
+                print("Disgust Happened")
+                print("Agent {} was pushed from {} to {} on issue {} by Agent {}".format(self.unique_id, my_persuade_val, self.opinions[persuade_index], persuade_index, self.model.G.nodes[influencer]["agent"].unique_id))
+                self.model.repulsions+=1
 
         else: #no attraction or repulsion
             pass
