@@ -195,7 +195,7 @@ class bvmModel(Model):
 
         self.steps += 1
 #lsteps, agents, p, issues, othresh, dthresh
-test = bvmModel(150, 10, 0.4, 3, 0.20, .70)
+test = bvmModel(150, 20, 0.4, 3, 0.20, .70)
 
 #printAllAgentOpinions(test)
 

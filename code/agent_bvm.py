@@ -97,7 +97,7 @@ class bvmAgent(Agent):
                 pass
             else:
                 print("Disgust Happened")
-                print("Agent {} was pushed from {} to {} on issue {} by Agent {}".format(self.unique_id, my_persuade_val, self.opinions[persuade_index], persuade_index, self.model.G.nodes[influencer]["agent"].unique_id))
+                print("Agent {} was pushed from {} to {} on issue {} by Agent {} during step {} of the model".format(self.unique_id, my_persuade_val, self.opinions[persuade_index], persuade_index, self.model.G.nodes[influencer]["agent"].unique_id, self.model.steps))
                 self.model.repulsions+=1
 
         else: #no attraction or repulsion
