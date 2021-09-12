@@ -1,5 +1,6 @@
 from bvm_suite import *
 from bvm_sweep import *
+
 suite = bvmSuite({"p":.15, "c":.2, "d":.6,"issues":3, "l_steps":50, "n_agents":10}, 4)
 suite.run()
 print(suite.getData())

@@ -4,7 +4,7 @@ from mesa import Agent
 import networkx as nx
 
 MIN_OPINION_MOVEMENT_FOR_PERSUASION = .03
-MIN_OPINION_MOVEMENT_FOR_DISGUST = .03
+MIN_OPINION_MOVEMENT_FOR_REPULSION = .03
 
 class bvmAgent(Agent):
 
@@ -12,7 +12,7 @@ class bvmAgent(Agent):
         super().__init__(unique_id, model)
         self.opinions = []
         for i in range(int(self.model.num_issues)):
-            num = round(self.random.uniform(0, 1), 2)
+            num = self.random.uniform(0, 1)
             self.opinions.append(num)
         self.pushOpinionsToGraph()
 
@@ -72,32 +72,30 @@ class bvmAgent(Agent):
             # from the influencer's by an amount equal to the amount it would
             # have moved *towards* the influencer's if it had been an
             # attraction.
-            attractionOpinion = round((my_persuade_val +
-                influencer_persuade_val)/2,2)
-            repulsionAmt = round(abs(attractionOpinion-my_persuade_val),2)
+            attractionOpinion = (my_persuade_val +
+                influencer_persuade_val)/2
+            repulsionAmt = abs(attractionOpinion-my_persuade_val)
 
             if my_persuade_val>influencer_persuade_val:
                 # The agent's opinion is higher than the influencer's, so it
                 # should be pushed closer to 1.
                 self.opinions[persuade_index]+=repulsionAmt
-                self.opinions[persuade_index] = round(self.opinions[persuade_index],2)
-                if(self.opinions[persuade_index]>=1):
-                    self.opinions[persuade_index] = .99
+                if(self.opinions[persuade_index]>1):
+                    self.opinions[persuade_index] = 1
             else:
                 # The agent's opinion is lower than the influencer's, so it
                 # should be pushed closer to 0.
                 self.opinions[persuade_index]-=repulsionAmt
-                self.opinions[persuade_index] = round(self.opinions[persuade_index],2)
-                if(self.opinions[persuade_index]<=0):
-                    self.opinions[persuade_index] = .01
+                if(self.opinions[persuade_index]<0):
+                    self.opinions[persuade_index] = 0
              
             if (abs(my_persuade_val - self.opinions[persuade_index]) <
-                MIN_OPINION_MOVEMENT_FOR_DISGUST):
+                MIN_OPINION_MOVEMENT_FOR_REPULSION):
                 #doesn't count as repulsion
                 pass
             else:
-                print("Disgust Happened")
-                print("Agent {} was pushed from {} to {} on issue {} by Agent {} during step {} of the model".format(self.unique_id, my_persuade_val, self.opinions[persuade_index], persuade_index, self.model.G.nodes[influencer]["agent"].unique_id, self.model.steps))
+                #print("Disgust Happened")
+                #print("Agent {} was pushed from {} to {} on issue {} by Agent {} during step {} of the model".format(self.unique_id, round(my_persuade_val,2), round(self.opinions[persuade_index],2), persuade_index, self.model.G.nodes[influencer]["agent"].unique_id, self.model.steps))
                 self.model.repulsions+=1
 
         else: #no attraction or repulsion

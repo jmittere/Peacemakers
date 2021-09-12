@@ -10,7 +10,7 @@ class bvmSweep():
                 fixed_parameters = fixedParams,
                 variable_parameters = variableParams,
                 iterations=iters,
-                model_reporters = {'avg_assort':get_avg_assort, 'opinionClustering':returnNonUniform}
+                model_reporters = {'avg_assort':get_avg_assort, 'opinionClustering':numNonUniformIssues}
                 )
 
 

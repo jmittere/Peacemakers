@@ -30,34 +30,29 @@ def get_avg_assort(model):
     assorts = []
     uniformOpinion = True
     opinion = -1
+
     for i in range(0, model.num_issues):
-        try:
-            assort = nx.numeric_assortativity_coefficient(model.G,
-                "iss_{}".format(i))
-            assorts.append(assort)
-        except RuntimeWarning:
-            # check if all agents have same opinion
-            if isIssueUniform(model, i):
-                # Perfect uniformity, so consider this issue to have
-                # assortativity 0.
-                assorts.append(0)
+        if isIssueUniform(model, i):
+            #Perfect uniformity, so consider this issue to have
+            # assortativity of 0. 
+            assorts.append(0)
+        else:
+            try:
+                assort = nx.numeric_assortativity_coefficient(model.G,"iss_{}".format(i))
+                assorts.append(assort)
+            except RuntimeWarning:
+                print("EXCEPTION")
+                raise
 
     return (sum(assorts) / len(assorts))
 
 
+def doKMeans(model):
+    #test method to see if k means works
+    pass
+
 def returnPersuasionsPerCapita(model):
     return model.persuasions / model.num_agents
-
-def get_mean_opinion_var(model):
-    return np.array(
-        [np.array([a.opinions[i] for a in model.schedule.agents])
-         for i in range(model.num_issues)
-         ]).var()
-
-def avg_agt_opinion(x, i, model):
-    avg_agt_opinion = [agent.opinions[i] for agent in model.schedule.agents]
-    return round(sum(avg_agt_opinion) / len(avg_agt_opinion), 2)
-
 
 # Return true if all agents have an identical opinion on this issue.
 def isIssueUniform(model, issueNum):
@@ -83,7 +78,7 @@ def getNumClusters(model, issueNum):
             # Not the first agent, so check if it's within threshold of another
             # cluster.
             for cluster in clustersList:
-                avgOpinion = round(sum(cluster) / len(cluster),2)
+                avgOpinion = sum(cluster) / len(cluster)
 
                 if((abs(avgOpinion - agentOpinion) < CLUSTER_THRESHOLD) and
                         (hasBeenAdded == False)):
@@ -102,7 +97,7 @@ def getNumClusters(model, issueNum):
 
 
 def numNonUniformIssues(model):
-    # Returns the number of issues on which all agents agree (within the
+    # Returns the number of issues on which all agents don't agree (within the
     # CLUSTER_THRESHOLD).
     counter = 0
     for i in range(0, model.num_issues):
@@ -114,7 +109,7 @@ def printAllAgentOpinions(model):
     for i in range(model.num_agents):
         for j in range(model.num_issues):
             print("Agent #{}, Issue #{}: {}".format(i, j,
-                model.G.nodes[i]["agent"].opinions[j]))
+                round(model.G.nodes[i]["agent"].opinions[j],2)))
 
 def getPersuasions(model):
     return model.persuasions
@@ -144,6 +139,7 @@ class bvmModel(Model):
         self.persuasions = 0
         self.equilibriumCounter= 0
         self.running = True
+        self.clusterTracking = {} #key:(unique_id, issue) 
 
         # generate ER graph with N nodes and prob of edge of P
         self.G = nx.erdos_renyi_graph(n_agents, p)
@@ -166,7 +162,7 @@ class bvmModel(Model):
         )
 
         self.datacollector._new_model_reporter("assortativity", get_avg_assort)
-        self.datacollector._new_model_reporter("opinionClusters",
+        self.datacollector._new_model_reporter("numberOfNonUniformIssues",
             numNonUniformIssues)
         self.datacollector._new_model_reporter("persuasions", getPersuasions)
         self.datacollector._new_model_reporter("repulsions", getRepulsions)
@@ -194,6 +190,8 @@ class bvmModel(Model):
             self.running = False
 
         self.steps += 1
+
+'''
 #lsteps, agents, p, issues, othresh, dthresh
 test = bvmModel(150, 20, 0.4, 3, 0.20, .70)
 
@@ -206,3 +204,4 @@ for i in range(100):
 
 df = test.datacollector.get_model_vars_dataframe()
 print(df)
+'''
