@@ -62,6 +62,7 @@ class bvmAgent(Agent):
                 pass
             else:
                 self.model.persuasions+=1
+                self.model.influencesLastStep+=1
 
         elif (abs(my_compare_val-influencer_compare_val) >=
             self.model.disgust_threshold):
@@ -97,6 +98,7 @@ class bvmAgent(Agent):
                 #print("Disgust Happened")
                 #print("Agent {} was pushed from {} to {} on issue {} by Agent {} during step {} of the model".format(self.unique_id, round(my_persuade_val,2), round(self.opinions[persuade_index],2), persuade_index, self.model.G.nodes[influencer]["agent"].unique_id, self.model.steps))
                 self.model.repulsions+=1
+                self.model.influencesLastStep+=1
 
         else: #no attraction or repulsion
             pass

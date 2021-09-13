@@ -10,6 +10,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import math
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_samples, silhouette_score
 
 from agent_bvm import bvmAgent
 
@@ -18,7 +20,6 @@ EQUILIBRIUM_THRESHOLD = 5
 
 warnings.simplefilter('error', RuntimeWarning)
 warnings.simplefilter(action='ignore', category=FutureWarning)
-
 
 def getOpinion(model, agent_num, iss_num):
     # Return the opinion value of a specific agent on a specific issue.
@@ -41,15 +42,77 @@ def get_avg_assort(model):
                 assort = nx.numeric_assortativity_coefficient(model.G,"iss_{}".format(i))
                 assorts.append(assort)
             except RuntimeWarning:
-                print("EXCEPTION")
+                print("Runtime Warning...")
                 raise
 
     return (sum(assorts) / len(assorts))
 
+def returnOptimalK(scores):
+    highest = -2
+    optimalK = -1
+    #scores[0] is 2 clusters, NOT 0 clusters
+    #print("Silhouettes: ", scores)
+    for i in range(len(scores)):
+        if(scores[i]>highest):
+            highest = scores[i]
+            optimalK = i
 
-def doKMeans(model):
-    #test method to see if k means works
-    pass
+    #print("Silhouette Avgs max: ", max(scores))
+    return optimalK + 2  
+
+def plotElbow(k, sums):
+    plt.plot(k,sums)
+    plt.xlabel('k')
+    plt.ylabel('Sum of Squared Distances')
+    plt.title('Elbow Method for Optimal k value')
+    plt.show()
+
+def doKMeans(model, issueNum):
+    klist=[] # an array of every agent's opinion for issueNum
+    for i in range(model.num_agents):
+        klist.append(model.G.nodes[i]["iss_{}".format(issueNum)])
+    
+    '''
+    #plot the agents opinions
+    ylist = [0 for i in range(len(klist))]
+    plt.scatter(klist, ylist, alpha=0.5)
+    plt.xticks(np.arange(0,100,10))
+    #plt.show()
+    '''
+
+    K = range(2,10) #range of clusters to try for kmeans
+    silhouette_avgs = [] 
+    sum_squared_distances = []
+    opinionList = np.array(klist).reshape(-1,1) #why do I need to do this
+    
+    for k in K:
+        kmeans = KMeans(n_clusters=k)
+        kmeans.fit_predict(opinionList) #do the kmeans clustering
+        
+        assert(len(kmeans.labels_)>1),"less than 2 labels"
+        #print("Steps: ", model.steps)
+        #print("Labels: ", kmeans.labels_)
+        score = silhouette_score(opinionList, kmeans.labels_, metric='euclidean')
+        silhouette_avgs.append(score)
+        sum_squared_distances.append(kmeans.inertia_)
+
+    #Elbow Method analysis plot
+    #plotElbow(K, sum_squared_distances)
+
+    #find the optimal number of clusters with silhouette method
+    optimalK = returnOptimalK(silhouette_avgs)
+    #print("Optimal K: ", optimalK)
+    
+    #do KMeans clustering again with the optimized number of clusters
+    optimizedKMeans = KMeans(n_clusters=optimalK)
+    optimizedKMeans.fit_predict(opinionList)
+
+    #print("Cluster_Centers: ", optimizedKMeans.cluster_centers_)
+    #print("Labels: ", optimizedKMeans.labels_)
+    
+    for i in range(model.num_agents):
+        model.clusterTracking[(i, issueNum)] = optimizedKMeans.labels_[i]        
+
 
 def returnPersuasionsPerCapita(model):
     return model.persuasions / model.num_agents
@@ -137,6 +200,7 @@ class bvmModel(Model):
         self.steps = 0
         self.repulsions = 0
         self.persuasions = 0
+        self.influencesLastStep = 0
         self.equilibriumCounter= 0
         self.running = True
         self.clusterTracking = {} #key:(unique_id, issue) 
@@ -171,8 +235,15 @@ class bvmModel(Model):
 
 
     def step(self):
+        self.influencesLastStep = 0
         self.schedule.step()
-        if self.persuasions == 0:
+        
+        for i in range(self.num_issues):
+            with warnings.catch_warnings(): #ignoring the ConvergenceWarning from doKMeans(), can we catch this somehow??
+                warnings.simplefilter("ignore")
+                doKMeans(self, i)
+
+        if self.influencesLastStep == 0:
             self.equilibriumCounter += 1
         else:
             # Reset equilibrium counter if there are persuasions still
@@ -191,17 +262,21 @@ class bvmModel(Model):
 
         self.steps += 1
 
-'''
 #lsteps, agents, p, issues, othresh, dthresh
-test = bvmModel(150, 20, 0.4, 3, 0.20, .70)
-
+test = bvmModel(150, 50, 0.40, 3, 0.20, 0.70)
 #printAllAgentOpinions(test)
 
-for i in range(100):
-    test.step()
-
+for i in range(test.l_steps):
+    if(test.running):
+        test.step()
+        if(i==25):
+            for i in range(test.num_issues):
+                #doKMeans(test, i)
+                pass
+            print(test.clusterTracking)
+    else:
+        break
 #printAllAgentOpinions(test)
 
 df = test.datacollector.get_model_vars_dataframe()
-print(df)
-'''
+#print(df)
