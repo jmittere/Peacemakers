@@ -241,13 +241,13 @@ class bvmModel(Model):
         for i in range(self.num_issues):
             with warnings.catch_warnings(): #ignoring the ConvergenceWarning from doKMeans(), can we catch this somehow??
                 warnings.simplefilter("ignore")
-                doKMeans(self, i)
+                #doKMeans(self, i)
 
         if self.influencesLastStep == 0:
             self.equilibriumCounter += 1
         else:
-            # Reset equilibrium counter if there are persuasions still
-            # happening.
+            # Reset equilibrium counter if there are persuasions
+            #or repulsions still happening.
             self.equilibriumCounter = 0
 
         self.datacollector.collect(self)
@@ -263,7 +263,7 @@ class bvmModel(Model):
         self.steps += 1
 
 #lsteps, agents, p, issues, othresh, dthresh
-test = bvmModel(150, 50, 0.40, 3, 0.20, 0.70)
+test = bvmModel(150, 50, 0.40, 3, 0.10, 0.50)
 #printAllAgentOpinions(test)
 
 for i in range(test.l_steps):
@@ -273,10 +273,17 @@ for i in range(test.l_steps):
             for i in range(test.num_issues):
                 #doKMeans(test, i)
                 pass
-            print(test.clusterTracking)
+            #print(test.clusterTracking)
     else:
         break
 #printAllAgentOpinions(test)
 
 df = test.datacollector.get_model_vars_dataframe()
-#print(df)
+print(df)
+plt.plot(df['repulsions'], label='repulsions')
+plt.plot(df['persuasions'],label='persuasions')
+
+plt.xlabel('Time (steps)')
+plt.ylabel('Repulsions & Persuasions')
+plt.legend(loc='lower right')
+plt.show()
