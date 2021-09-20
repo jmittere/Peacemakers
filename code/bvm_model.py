@@ -8,6 +8,7 @@ from mesa.datacollection import DataCollector
 import networkx as nx
 import pandas as pd
 import numpy as np
+import scipy
 import matplotlib.pyplot as plt
 import math
 from sklearn.cluster import KMeans
@@ -24,6 +25,21 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 def getOpinion(model, agent_num, iss_num):
     # Return the opinion value of a specific agent on a specific issue.
     return model.schedule.agents[agent_num].opinions[iss_num]
+
+def getNumPairwiseAgreements(model):
+    # For every pair of agents in the entire model, determine the number of
+    # issues on which they agree. ("agree" means "in the same cluster for that
+    # issue.") Return a list (with N-choose-2 elements) of those counts.
+    agents = model.schedule.agents
+    agreements = np.empty(int(scipy.special.binom(len(agents),2)),dtype=int)
+    agreementNum = 0
+    for index1 in range(len(agents)):
+        for index2 in range(index1+1,len(agents)):
+            # TODO: is CLUSTER_THRESHOLD the right thing to use here?
+            agreements[agreementNum] = agents[index1].numAgreementsWith(
+                agents[index2], CLUSTER_THRESHOLD)
+            agreementNum += 1
+    return agreements.tolist()
 
 def get_avg_assort(model):
     # Compute the average graph assortativity, with respect to opinion values.

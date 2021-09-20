@@ -103,3 +103,9 @@ class bvmAgent(Agent):
         else: #no attraction or repulsion
             pass
 
+
+    def numAgreementsWith(self, other, threshold):
+        # Return the number of issues on which this agent's opinion and
+        # another agent's opinion are within a threshold of each other.
+        return sum([ abs(o1-o2)<threshold for o1,o2 in zip(self.opinions,
+            other.opinions) ])
