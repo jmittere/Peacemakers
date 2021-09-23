@@ -26,15 +26,21 @@ def getOpinion(model, agent_num, iss_num):
     # Return the opinion value of a specific agent on a specific issue.
     return model.schedule.agents[agent_num].opinions[iss_num]
 
-def getMultimodalityStatistic(model):
+def getMultimodalityStatisticClone(model):
+    return getMultimodalityStatistic(model,
+        len(model.schedule.agents[0].opinions))
+
+def getMultimodalityStatisticAnticlone(model):
+    return getMultimodalityStatistic(model,0)
+
+def getMultimodalityStatistic(model, target):
     # Return a statistic estimating the evidence for multi-modality in the
     # number of opinion agreements that each agent has pairwise with every
     # other.
     pwa = getNumPairwiseAgreements(model)
 
     # For now, use a blunt object: number of anti-clones and clones.
-    return sum([ a in [0,len(model.schedule.agents[0].opinions)]
-        for a in pwa ])
+    return sum([ a == target for a in pwa ])
 
 def getNumPairwiseAgreements(model):
     # For every pair of agents in the entire model, determine the number of
@@ -256,8 +262,10 @@ class bvmModel(Model):
             numNonUniformIssues)
         self.datacollector._new_model_reporter("persuasions", getPersuasions)
         self.datacollector._new_model_reporter("repulsions", getRepulsions)
-        self.datacollector._new_model_reporter("multiModalityStat",
-            getMultimodalityStatistic)
+        self.datacollector._new_model_reporter("multiModalityStatClone",
+            getMultimodalityStatisticClone)
+        self.datacollector._new_model_reporter("multiModalityStatAnticlone",
+            getMultimodalityStatisticAnticlone)
 
         self.datacollector.collect(self)
 
@@ -316,8 +324,9 @@ plt.ylabel('Repulsions & Persuasions')
 plt.legend(loc='lower right')
 plt.show()
 
-plt.clf()
-plt.plot(df['multiModalityStat'], label='multi-modality stat')
+plt.figure()
+plt.plot(df['multiModalityStatClone'], label='clones')
+plt.plot(df['multiModalityStatAnticlone'], label='anti-clones')
 
 plt.xlabel('Time (steps)')
 plt.ylabel('# clones/anti-clones')
