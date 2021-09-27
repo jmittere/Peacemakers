@@ -145,15 +145,19 @@ def doKMeans(model, issueNum):
     
     for i in range(model.num_agents):
         model.clusterTracking[(i, issueNum)] = optimizedKMeans.labels_[i]        
+
 def getAllOpinions(model, issueNum):
     oList=[] # an array of every agent's opinion for issueNum
     for i in range(model.num_agents):
         oList.append(model.G.nodes[i]["iss_{}".format(issueNum)])
     return oList
 
+#TODO
 def doAutoGMM(model, issueNum):
     oList = getAllOpinions(model,issueNum) #get all opinions for an issue
-    clusters = model.autogmm.fit(np.asarray(oList)) #perform AutoGMM algorithm
+    nparray = np.array(oList)
+    print(nparray)
+    clusters = model.autogmm.fit(nparray) #perform AutoGMM algorithm
     print("There were {} clusters for issue {} in step {} ".format(clusters.n_components, issueNum, model.steps))
 
 
@@ -312,22 +316,18 @@ class bvmModel(Model):
         self.steps += 1
 
 #lsteps, agents, p, issues, othresh, dthresh
-test = bvmModel(150, 50, 0.40, 3, 0.05, 0.45)
+test = bvmModel(1000, 100, 0.05, 3, 0.15, 0.6)
 #printAllAgentOpinions(test)
 
 for i in range(test.l_steps):
     if(test.running):
         test.step()
-        if(i==25):
-            for i in range(test.num_issues):
-                doAutoGMM(test, i)
-                pass
+        #if(i==25):
+            #for i in range(test.num_issues):
+             #   doAutoGMM(test, i)
     else:
         break
-#printAllAgentOpinions(test)
-
-for i in range(test.num_issues):
-    doAutoGMM(test, i)
+printAllAgentOpinions(test)
 
 df = test.datacollector.get_model_vars_dataframe()
 print(df)
