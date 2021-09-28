@@ -31,6 +31,12 @@ def getMultimodalityStatisticClone(model):
     return getMultimodalityStatistic(model,
         len(model.schedule.agents[0].opinions))
 
+def getMultimodalityStatisticOneAgreement(model):
+    return getMultimodalityStatistic(model, 1)
+
+def getMultimodalityStatisticTwoAgreements(model):
+    return getMultimodalityStatistic(model, 2)
+
 def getMultimodalityStatisticAnticlone(model):
     return getMultimodalityStatistic(model,0)
 
@@ -79,72 +85,6 @@ def get_avg_assort(model):
                 raise
 
     return (sum(assorts) / len(assorts))
-
-def returnOptimalK(scores):
-    highest = -2
-    optimalK = -1
-    #scores[0] is 2 clusters, NOT 0 clusters
-    #print("Silhouettes: ", scores)
-    for i in range(len(scores)):
-        if(scores[i]>highest):
-            highest = scores[i]
-            optimalK = i
-
-    #print("Silhouette Avgs max: ", max(scores))
-    return optimalK + 2  
-
-def plotElbow(k, sums):
-    plt.plot(k,sums)
-    plt.xlabel('k')
-    plt.ylabel('Sum of Squared Distances')
-    plt.title('Elbow Method for Optimal k value')
-    plt.show()
-
-def doKMeans(model, issueNum):
-    klist=[] # an array of every agent's opinion for issueNum
-    for i in range(model.num_agents):
-        klist.append(model.G.nodes[i]["iss_{}".format(issueNum)])
-    
-    '''
-    #plot the agents opinions
-    ylist = [0 for i in range(len(klist))]
-    plt.scatter(klist, ylist, alpha=0.5)
-    plt.xticks(np.arange(0,100,10))
-    #plt.show()
-    '''
-
-    K = range(2,10) #range of clusters to try for kmeans
-    silhouette_avgs = [] 
-    sum_squared_distances = []
-    opinionList = np.array(klist).reshape(-1,1) #why do I need to do this
-    
-    for k in K:
-        kmeans = KMeans(n_clusters=k)
-        kmeans.fit_predict(opinionList) #do the kmeans clustering
-        
-        assert(len(kmeans.labels_)>1),"less than 2 labels"
-        #print("Steps: ", model.steps)
-        #print("Labels: ", kmeans.labels_)
-        score = silhouette_score(opinionList, kmeans.labels_, metric='euclidean')
-        silhouette_avgs.append(score)
-        sum_squared_distances.append(kmeans.inertia_)
-
-    #Elbow Method analysis plot
-    #plotElbow(K, sum_squared_distances)
-
-    #find the optimal number of clusters with silhouette method
-    optimalK = returnOptimalK(silhouette_avgs)
-    #print("Optimal K: ", optimalK)
-    
-    #do KMeans clustering again with the optimized number of clusters
-    optimizedKMeans = KMeans(n_clusters=optimalK)
-    optimizedKMeans.fit_predict(opinionList)
-
-    #print("Cluster_Centers: ", optimizedKMeans.cluster_centers_)
-    #print("Labels: ", optimizedKMeans.labels_)
-    
-    for i in range(model.num_agents):
-        model.clusterTracking[(i, issueNum)] = optimizedKMeans.labels_[i]        
 
 def getAllOpinions(model, issueNum):
     oList=[] # an array of every agent's opinion for issueNum
@@ -227,7 +167,6 @@ def getPersuasions(model):
 def getRepulsions(model):
     return model.repulsions
 
-
 class bvmModel(Model):
 
     # N: # of agents
@@ -283,18 +222,17 @@ class bvmModel(Model):
         self.datacollector._new_model_reporter("multiModalityStatAnticlone",
             getMultimodalityStatisticAnticlone)
 
+        self.datacollector._new_model_reporter("multiModalityStatOneAgreement",
+            getMultimodalityStatisticOneAgreement)
+        self.datacollector._new_model_reporter("multiModalityStatTwoAgreements",
+            getMultimodalityStatisticTwoAgreements)
+
         self.datacollector.collect(self)
 
 
     def step(self):
         self.influencesLastStep = 0
         self.schedule.step()
-       
-        #do clustering here
-        for i in range(self.num_issues):
-            with warnings.catch_warnings(): #ignoring the ConvergenceWarning from doKMeans(), can we catch this somehow??
-                warnings.simplefilter("ignore")
-                #doKMeans(self, i)
 
         if self.influencesLastStep == 0:
             self.equilibriumCounter += 1
@@ -316,7 +254,7 @@ class bvmModel(Model):
         self.steps += 1
 
 #lsteps, agents, p, issues, othresh, dthresh
-test = bvmModel(1000, 100, 0.05, 3, 0.15, 0.6)
+test = bvmModel(1000, 100, 0.3, 3, 0.1, 0.55)
 #printAllAgentOpinions(test)
 
 for i in range(test.l_steps):
@@ -324,10 +262,10 @@ for i in range(test.l_steps):
         test.step()
         #if(i==25):
             #for i in range(test.num_issues):
-             #   doAutoGMM(test, i)
+                #doAutoGMM(test, i)
     else:
         break
-printAllAgentOpinions(test)
+#printAllAgentOpinions(test)
 
 df = test.datacollector.get_model_vars_dataframe()
 print(df)
@@ -342,8 +280,10 @@ plt.show()
 plt.figure()
 plt.plot(df['multiModalityStatClone'], label='clones')
 plt.plot(df['multiModalityStatAnticlone'], label='anti-clones')
+plt.plot(df['multiModalityStatOneAgreement'], label='oneAgreements', color='green')
+plt.plot(df['multiModalityStatTwoAgreements'], label='TwoAgreements', color='red')
 
 plt.xlabel('Time (steps)')
-plt.ylabel('# clones/anti-clones')
-plt.legend(loc='lower right')
+plt.ylabel('# clones/anti-clones/1 Agreements/2 Agreements')
+plt.legend(loc='upper right')
 plt.show()
