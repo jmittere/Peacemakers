@@ -252,7 +252,7 @@ class bvmModel(Model):
             self.running = False
 
         self.steps += 1
-
+'''
 #lsteps, agents, p, issues, othresh, dthresh
 test = bvmModel(1000, 100, 0.3, 3, 0.1, 0.55)
 #printAllAgentOpinions(test)
@@ -287,3 +287,4 @@ plt.xlabel('Time (steps)')
 plt.ylabel('# clones/anti-clones/1 Agreements/2 Agreements')
 plt.legend(loc='upper right')
 plt.show()
+'''
