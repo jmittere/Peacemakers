@@ -10,7 +10,7 @@ class bvmSuite():
                 bvmModel, 
                 fixed_parameters = fixedParams,
                 iterations=iters,
-                model_reporters = {'Anticlones':getMultimodalityStatisticAnticlone, 'Clones':getMultimodalityStatisticClone}
+                model_reporters = {'Steps':getSteps,'Anticlones':getMultimodalityStatisticAnticlone, 'Clones':getMultimodalityStatisticClone}
                 )
         self.data = None
 
@@ -28,10 +28,8 @@ class bvmSuite():
         else:
             data = self.data
         
-        #data.hist(alpha=0.7, column='Clones', bins=[len(data['Clones'].unique()),10])
-        data.hist(alpha=0.8, column='Clones')
-        #data.hist(alpha=0.7, column='Anticlones', bins=[len(data['Anticlones'].unique()),10])
-        data.hist(alpha=0.8, column='Anticlones')
+        data.hist(alpha=0.8, column='Clones', bins=10)
+        data.hist(alpha=0.8, column='Anticlones', bins=10)
         plt.show()
         
         

@@ -94,15 +94,37 @@ def getAllOpinions(model, issueNum):
 
 #TODO
 def doAutoGMM(model, issueNum):
-    oList = getAllOpinions(model,issueNum) #get all opinions for an issue
-    nparray = np.array(oList)
-    print(nparray)
-    clusters = model.autogmm.fit(nparray) #perform AutoGMM algorithm
-    print("There were {} clusters for issue {} in step {} ".format(clusters.n_components, issueNum, model.steps))
-
+    if (model.steps%10) != 0:
+        return -1
+    else:
+        
+        oList = getAllOpinions(model,issueNum) #get all opinions for an issue
+        opinion_arr = np.array(oList)
+        opinion_arr = opinion_arr.reshape(model.num_agents,1)
+        clusters = model.autogmm.fit(opinion_arr) #perform AutoGMM algorithm
+        #print("There were {} clusters for issue {} in step {} ".format(clusters.n_components, issueNum, model.steps))
+        return clusters.n_components_
 
 def returnPersuasionsPerCapita(model):
     return model.persuasions / model.num_agents
+
+def returnLowOpinions(model, issueNum):
+    #returns the number of agents within .1 of 0
+    agents = model.schedule.agents
+    agentCount=0
+    for a in agents:
+        if a.opinions[issueNum]<=.10:
+            agentCount+=1
+    return agentCount
+
+def returnHighOpinions(model, issueNum):
+    #returns the number of agents within CLUSTER_THRESHOLD of 1
+    agents = model.schedule.agents
+    agentCount=0
+    for a in agents:
+        if a.opinions[issueNum]>=.90:
+            agentCount+=1
+    return agentCount
 
 # Return true if all agents have an identical opinion on this issue.
 def isIssueUniform(model, issueNum):
@@ -167,6 +189,9 @@ def getPersuasions(model):
 def getRepulsions(model):
     return model.repulsions
 
+def getSteps(model):
+    return model.steps
+
 class bvmModel(Model):
 
     # N: # of agents
@@ -202,16 +227,23 @@ class bvmModel(Model):
             agent = bvmAgent(i, self)
             self.G.nodes[i]["agent"] = agent
             self.schedule.add(agent)
+      
+        #reporters =  {"clustersforIssue_{}".format(i):
+        #    lambda model, issueNum=i:
+        #    getNumClusters(model,issueNum) for i in range(self.num_issues)}
+        
+        #autoGmmReporters = {"autogmmclustersforIssue_{}".format(i):lambda model, issueNum=i: doAutoGMM(model,issueNum) for i in range(self.num_issues)}
 
-        reporters =  {"clustersforIssue_{}".format(i):
-            lambda model, issueNum=i:
-            getNumClusters(model,issueNum) for i in range(self.num_issues)}
+        #reporters.update(autoGmmReporters)
+        reporters = {"low_iss_{}".format(i):lambda model, issueNum=i: returnLowOpinions(model,issueNum) for i in range(self.num_issues)}
+        dems = {"high_iss_{}".format(i):lambda model, issueNum=i: returnHighOpinions(model,issueNum) for i in range(self.num_issues)}
+        reporters.update(dems)
 
         self.datacollector = DataCollector(
-            model_reporters=reporters,
+            model_reporters={},
             agent_reporters={}
         )
-
+        
         self.datacollector._new_model_reporter("assortativity", get_avg_assort)
         self.datacollector._new_model_reporter("numberOfNonUniformIssues",
             numNonUniformIssues)
@@ -254,27 +286,32 @@ class bvmModel(Model):
         self.steps += 1
 '''
 #lsteps, agents, p, issues, othresh, dthresh
-test = bvmModel(1000, 100, 0.3, 3, 0.1, 0.55)
-#printAllAgentOpinions(test)
+test = bvmModel(1000, 100, 0.3, 3, 0.15, 0.5)
 
 for i in range(test.l_steps):
-    if(test.running):
-        test.step()
-        #if(i==25):
-            #for i in range(test.num_issues):
-                #doAutoGMM(test, i)
-    else:
+    test.step()
+    if(test.running == False):
         break
-#printAllAgentOpinions(test)
 
+#printAllAgentOpinions(test)
 df = test.datacollector.get_model_vars_dataframe()
+df.to_csv("singleRun.csv")
 print(df)
+plt.figure()
 plt.plot(df['repulsions'], label='repulsions')
 plt.plot(df['persuasions'],label='persuasions')
-
 plt.xlabel('Time (steps)')
 plt.ylabel('Repulsions & Persuasions')
 plt.legend(loc='lower right')
+plt.show()
+
+plt.figure()
+for i in range(test.num_issues):
+    plt.plot(df['low_iss_{}'.format(i)], label='low_{}'.format(i), color='red')
+    plt.plot(df['high_iss_{}'.format(i)], label='high_{}'.format(i), color='blue')
+plt.xlabel('Time (steps)')
+plt.ylabel('Low Opinions and High Opinions')
+plt.legend(loc='best')
 plt.show()
 
 plt.figure()

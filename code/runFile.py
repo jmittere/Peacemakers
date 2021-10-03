@@ -1,12 +1,17 @@
 from bvm_suite import *
 from bvm_sweep import *
+import pandas as pd
+suite = bvmSuite({"p":.3, "c":.15, "d":.50,"issues":3, "l_steps":1000, "n_agents":50}, 100)
+'''
+suite.run()
+x = suite.getData()
+x.to_csv('suiteData.csv')
+'''
+x = pd.read_csv('suiteData.csv')
+print("Mean: ", x['Steps'].mean())
+print("Median: ", x['Steps'].median())
+print(x)
 
-suite = bvmSuite({"p":.3, "c":.15, "d":.55,"issues":3, "l_steps":1000, "n_agents":100}, 75)
-
-#suite.run()
-#x = suite.getData()
-#x.to_csv('suiteData.csv')
-#print(x)
 suite.plotAvgClone_AntiCloneHist('suiteData.csv')
 
 '''
