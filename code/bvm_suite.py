@@ -27,9 +27,11 @@ class bvmSuite():
             data = pd.read_csv(filename)
         else:
             data = self.data
-        
-        data.hist(alpha=0.8, column='Clones', bins=10)
-        data.hist(alpha=0.8, column='Anticlones', bins=10)
+        plt.figure() 
+        plt.hist(data['Clones'], alpha=0.5, label='Clones')
+        plt.hist(data['Anticlones'], alpha=0.5, label='Anticlones')
+        plt.ylabel('Frequencies')
+        plt.legend(loc='best')
         plt.show()
         
         

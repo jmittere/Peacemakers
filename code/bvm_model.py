@@ -195,12 +195,12 @@ class bvmModel(Model):
     # T: # of simulation iterations
     # C: openness threshold for agents
     # D: disgust threshold for agents
-    def __init__(self, l_steps, n_agents, p, issues, c, d, seed=None):
+    def __init__(self, l_steps, n_agents, p, issues, o, d, seed=None):
         super().__init__()
         self.l_steps = l_steps
         self.num_agents = n_agents
         self.num_issues = issues
-        self.openness_threshold = c
+        self.openness_threshold = o
         self.disgust_threshold = d
         self.schedule = RandomActivation(self)
         self.steps = 0
@@ -227,13 +227,13 @@ class bvmModel(Model):
             lambda model, issueNum=i:
             getNumClusters(model,issueNum) for i in range(self.num_issues)}
         
-        autoGmmReporters = {"autogmmclustersforIssue_{}".format(i):lambda model, issueNum=i: doAutoGMM(model,issueNum) for i in range(self.num_issues)}
+        #autoGmmReporters = {"autogmmclustersforIssue_{}".format(i):lambda model, issueNum=i: doAutoGMM(model,issueNum) for i in range(self.num_issues)}
 
         repubs = {"low_iss_{}".format(i):lambda model, issueNum=i: returnLowOpinions(model,issueNum) for i in range(self.num_issues)}
         dems = {"high_iss_{}".format(i):lambda model, issueNum=i: returnHighOpinions(model,issueNum) for i in range(self.num_issues)}
         reporters.update(dems)
         reporters.update(repubs)
-        reporters.update(autoGmmReporters)
+        #reporters.update(autoGmmReporters)
 
         self.datacollector = DataCollector(
             model_reporters=reporters,
