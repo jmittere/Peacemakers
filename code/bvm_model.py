@@ -92,18 +92,13 @@ def getAllOpinions(model, issueNum):
         oList.append(model.G.nodes[i]["iss_{}".format(issueNum)])
     return oList
 
-#TODO
 def doAutoGMM(model, issueNum):
-    if (model.steps%10) != 0:
-        return -1
-    else:
-        
-        oList = getAllOpinions(model,issueNum) #get all opinions for an issue
-        opinion_arr = np.array(oList)
-        opinion_arr = opinion_arr.reshape(model.num_agents,1)
-        clusters = model.autogmm.fit(opinion_arr) #perform AutoGMM algorithm
-        #print("There were {} clusters for issue {} in step {} ".format(clusters.n_components, issueNum, model.steps))
-        return clusters.n_components_
+    oList = getAllOpinions(model,issueNum) #get all opinions for an issue
+    opinion_arr = np.array(oList)
+    opinion_arr = opinion_arr.reshape(model.num_agents,1)
+    clusters = model.autogmm.fit(opinion_arr) #perform AutoGMM algorithm
+    #print("There were {} clusters for issue {} in step {} ".format(clusters.n_components, issueNum, model.steps))
+    return clusters.n_components_
 
 def returnPersuasionsPerCapita(model):
     return model.persuasions / model.num_agents
@@ -118,7 +113,7 @@ def returnLowOpinions(model, issueNum):
     return agentCount
 
 def returnHighOpinions(model, issueNum):
-    #returns the number of agents within CLUSTER_THRESHOLD of 1
+    #returns the number of agents within .1 of 1
     agents = model.schedule.agents
     agentCount=0
     for a in agents:
@@ -228,16 +223,17 @@ class bvmModel(Model):
             self.G.nodes[i]["agent"] = agent
             self.schedule.add(agent)
       
-        #reporters =  {"clustersforIssue_{}".format(i):
-        #    lambda model, issueNum=i:
-        #    getNumClusters(model,issueNum) for i in range(self.num_issues)}
+        reporters =  {"clustersforIssue_{}".format(i):
+            lambda model, issueNum=i:
+            getNumClusters(model,issueNum) for i in range(self.num_issues)}
         
-        #autoGmmReporters = {"autogmmclustersforIssue_{}".format(i):lambda model, issueNum=i: doAutoGMM(model,issueNum) for i in range(self.num_issues)}
+        autoGmmReporters = {"autogmmclustersforIssue_{}".format(i):lambda model, issueNum=i: doAutoGMM(model,issueNum) for i in range(self.num_issues)}
 
-        #reporters.update(autoGmmReporters)
-        reporters = {"low_iss_{}".format(i):lambda model, issueNum=i: returnLowOpinions(model,issueNum) for i in range(self.num_issues)}
+        repubs = {"low_iss_{}".format(i):lambda model, issueNum=i: returnLowOpinions(model,issueNum) for i in range(self.num_issues)}
         dems = {"high_iss_{}".format(i):lambda model, issueNum=i: returnHighOpinions(model,issueNum) for i in range(self.num_issues)}
         reporters.update(dems)
+        reporters.update(repubs)
+        reporters.update(autoGmmReporters)
 
         self.datacollector = DataCollector(
             model_reporters=reporters,
@@ -307,7 +303,7 @@ plt.ylabel('Repulsions & Persuasions')
 plt.legend(loc='lower right')
 plt.show()
 '''
-
+'''
 fig, axs = plt.subplots(2, 2)
 
 fig.suptitle('Republicans (Low Opinions) & Democrats (High Opinions)')
@@ -320,12 +316,12 @@ axs[1,0].plot(df['Steps'],df['high_iss_1'], color='blue')
 axs[0,1].set_title('Opinion 2')
 axs[0,1].plot(df['Steps'],df['low_iss_2'], color='red')
 axs[0,1].plot(df['Steps'],df['high_iss_2'], color='blue')
-'''
 axs[1,1].set_title('Opinion 3')
 axs[1,1].plot(df['Steps'],df['low_iss_3'], color='red')
 axs[1,1].plot(df['Steps'],df['high_iss_3'], color='blue')
 '''
 
+'''
 #set axis labels
 for ax in axs.flat:
     ax.set(xlabel='Steps', ylabel='# of agents')
@@ -334,6 +330,7 @@ for ax in axs.flat:
 for ax in axs.flat:
     ax.label_outer()
 fig.tight_layout()
+'''
 
 plt.figure()
 plt.plot(df['multiModalityStatClone'], label='clones')
@@ -343,5 +340,5 @@ plt.plot(df['multiModalityStatTwoAgreements'], label='TwoAgreements', color='red
 
 plt.xlabel('Time (steps)')
 plt.ylabel('# clones/anti-clones/1 Agreements/2 Agreements')
-plt.legend(loc='upper right')
+plt.legend(loc='best')
 plt.show()
