@@ -287,7 +287,7 @@ class bvmModel(Model):
         self.steps += 1
 
 #lsteps, agents, p, issues, othresh, dthresh
-test = bvmModel(1000, 50, 0.3, 4, 0.10, 0.45)
+test = bvmModel(1000, 50, 0.3, 3, 0.10, 0.45)
 
 for i in range(test.l_steps):
     test.step()
@@ -320,9 +320,11 @@ axs[1,0].plot(df['Steps'],df['high_iss_1'], color='blue')
 axs[0,1].set_title('Opinion 2')
 axs[0,1].plot(df['Steps'],df['low_iss_2'], color='red')
 axs[0,1].plot(df['Steps'],df['high_iss_2'], color='blue')
+'''
 axs[1,1].set_title('Opinion 3')
 axs[1,1].plot(df['Steps'],df['low_iss_3'], color='red')
 axs[1,1].plot(df['Steps'],df['high_iss_3'], color='blue')
+'''
 
 #set axis labels
 for ax in axs.flat:

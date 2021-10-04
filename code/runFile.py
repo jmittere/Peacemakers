@@ -8,8 +8,7 @@ x = suite.getData()
 x.to_csv('suiteData.csv')
 '''
 x = pd.read_csv('suiteData.csv')
-print("Mean: ", x['Steps'].mean())
-print("Median: ", x['Steps'].median())
+
 print(x)
 
 suite.plotAvgClone_AntiCloneHist('suiteData.csv')
