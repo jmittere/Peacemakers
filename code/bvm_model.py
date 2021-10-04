@@ -20,6 +20,10 @@ from agent_bvm import bvmAgent
 CLUSTER_THRESHOLD = .05
 EQUILIBRIUM_THRESHOLD = 5
 
+# The value of an opinion an agent would need to have to be considered "high"
+# (and 1-this would be considered "low").
+EXTREME_THRESHOLD = .9
+
 warnings.simplefilter('error', RuntimeWarning)
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
@@ -109,20 +113,29 @@ def returnPersuasionsPerCapita(model):
     return model.persuasions / model.num_agents
 
 def returnLowOpinions(model, issueNum):
-    #returns the number of agents within .1 of 0
+    #returns the number of agents within EXTREME_THRESHOLD of 0
     agents = model.schedule.agents
     agentCount=0
     for a in agents:
-        if a.opinions[issueNum]<=.10:
+        if a.opinions[issueNum]<=1-EXTREME_THRESHOLD:
             agentCount+=1
     return agentCount
 
 def returnHighOpinions(model, issueNum):
-    #returns the number of agents within CLUSTER_THRESHOLD of 1
+    #returns the number of agents within EXTREME_THRESHOLD of 1
     agents = model.schedule.agents
     agentCount=0
     for a in agents:
-        if a.opinions[issueNum]>=.90:
+        if a.opinions[issueNum]>=EXTREME_THRESHOLD:
+            agentCount+=1
+    return agentCount
+
+def returnModerateOpinions(model, issueNum):
+    #returns number of agents within (1-EXTREME_THRESHOLD,EXTREME_THRESHOLD)
+    agents = model.schedule.agents
+    agentCount=0
+    for a in agents:
+        if 1-EXTREME_THRESHOLD<=a.opinions[issueNum]<=EXTREME_THRESHOLD:
             agentCount+=1
     return agentCount
 
@@ -237,7 +250,9 @@ class bvmModel(Model):
         #reporters.update(autoGmmReporters)
         reporters = {"low_iss_{}".format(i):lambda model, issueNum=i: returnLowOpinions(model,issueNum) for i in range(self.num_issues)}
         dems = {"high_iss_{}".format(i):lambda model, issueNum=i: returnHighOpinions(model,issueNum) for i in range(self.num_issues)}
+        mods = {"mod_iss_{}".format(i):lambda model, issueNum=i: returnModerateOpinions(model,issueNum) for i in range(self.num_issues)}
         reporters.update(dems)
+        reporters.update(mods)
 
         self.datacollector = DataCollector(
             model_reporters=reporters,
@@ -287,7 +302,7 @@ class bvmModel(Model):
         self.steps += 1
 
 #lsteps, agents, p, issues, othresh, dthresh
-test = bvmModel(1000, 50, 0.3, 3, 0.10, 0.45)
+test = bvmModel(1000, 50, 0.3, 3, 0.10, 0.55)
 
 for i in range(test.l_steps):
     test.step()
@@ -314,12 +329,15 @@ fig.suptitle('Republicans (Low Opinions) & Democrats (High Opinions)')
 axs[0,0].set_title('Opinion 0')
 axs[0,0].plot(df['Steps'],df['low_iss_0'], color='red')
 axs[0,0].plot(df['Steps'],df['high_iss_0'], color='blue')
+axs[0,0].plot(df['Steps'],df['mod_iss_0'], color='green')
 axs[1,0].set_title('Opinion 1')
 axs[1,0].plot(df['Steps'],df['low_iss_1'], color='red')
 axs[1,0].plot(df['Steps'],df['high_iss_1'], color='blue')
+axs[1,0].plot(df['Steps'],df['mod_iss_1'], color='green')
 axs[0,1].set_title('Opinion 2')
 axs[0,1].plot(df['Steps'],df['low_iss_2'], color='red')
 axs[0,1].plot(df['Steps'],df['high_iss_2'], color='blue')
+axs[0,1].plot(df['Steps'],df['mod_iss_2'], color='green')
 '''
 axs[1,1].set_title('Opinion 3')
 axs[1,1].plot(df['Steps'],df['low_iss_3'], color='red')
