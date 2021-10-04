@@ -240,13 +240,14 @@ class bvmModel(Model):
         reporters.update(dems)
 
         self.datacollector = DataCollector(
-            model_reporters={},
+            model_reporters=reporters,
             agent_reporters={}
         )
-        
-        self.datacollector._new_model_reporter("assortativity", get_avg_assort)
-        self.datacollector._new_model_reporter("numberOfNonUniformIssues",
-            numNonUniformIssues)
+         
+        self.datacollector._new_model_reporter("Steps", getSteps)
+        #self.datacollector._new_model_reporter("assortativity", get_avg_assort)
+        #self.datacollector._new_model_reporter("numberOfNonUniformIssues",
+        #    numNonUniformIssues)
         self.datacollector._new_model_reporter("persuasions", getPersuasions)
         self.datacollector._new_model_reporter("repulsions", getRepulsions)
         self.datacollector._new_model_reporter("multiModalityStatClone",
@@ -284,9 +285,9 @@ class bvmModel(Model):
             self.running = False
 
         self.steps += 1
-'''
+
 #lsteps, agents, p, issues, othresh, dthresh
-test = bvmModel(1000, 100, 0.3, 3, 0.15, 0.5)
+test = bvmModel(1000, 50, 0.3, 4, 0.10, 0.45)
 
 for i in range(test.l_steps):
     test.step()
@@ -297,6 +298,7 @@ for i in range(test.l_steps):
 df = test.datacollector.get_model_vars_dataframe()
 df.to_csv("singleRun.csv")
 print(df)
+'''
 plt.figure()
 plt.plot(df['repulsions'], label='repulsions')
 plt.plot(df['persuasions'],label='persuasions')
@@ -304,15 +306,32 @@ plt.xlabel('Time (steps)')
 plt.ylabel('Repulsions & Persuasions')
 plt.legend(loc='lower right')
 plt.show()
+'''
 
-plt.figure()
-for i in range(test.num_issues):
-    plt.plot(df['low_iss_{}'.format(i)], label='low_{}'.format(i), color='red')
-    plt.plot(df['high_iss_{}'.format(i)], label='high_{}'.format(i), color='blue')
-plt.xlabel('Time (steps)')
-plt.ylabel('Low Opinions and High Opinions')
-plt.legend(loc='best')
-plt.show()
+fig, axs = plt.subplots(2, 2)
+
+fig.suptitle('Republicans (Low Opinions) & Democrats (High Opinions)')
+axs[0,0].set_title('Opinion 0')
+axs[0,0].plot(df['Steps'],df['low_iss_0'], color='red')
+axs[0,0].plot(df['Steps'],df['high_iss_0'], color='blue')
+axs[1,0].set_title('Opinion 1')
+axs[1,0].plot(df['Steps'],df['low_iss_1'], color='red')
+axs[1,0].plot(df['Steps'],df['high_iss_1'], color='blue')
+axs[0,1].set_title('Opinion 2')
+axs[0,1].plot(df['Steps'],df['low_iss_2'], color='red')
+axs[0,1].plot(df['Steps'],df['high_iss_2'], color='blue')
+axs[1,1].set_title('Opinion 3')
+axs[1,1].plot(df['Steps'],df['low_iss_3'], color='red')
+axs[1,1].plot(df['Steps'],df['high_iss_3'], color='blue')
+
+#set axis labels
+for ax in axs.flat:
+    ax.set(xlabel='Steps', ylabel='# of agents')
+
+#Hide x labels and tick labels for top plots and y ticks for right plots
+for ax in axs.flat:
+    ax.label_outer()
+fig.tight_layout()
 
 plt.figure()
 plt.plot(df['multiModalityStatClone'], label='clones')
@@ -324,4 +343,3 @@ plt.xlabel('Time (steps)')
 plt.ylabel('# clones/anti-clones/1 Agreements/2 Agreements')
 plt.legend(loc='upper right')
 plt.show()
-'''
