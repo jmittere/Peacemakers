@@ -14,11 +14,14 @@ import math
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_samples, silhouette_score
 from graspologic.cluster.autogmm import AutoGMMCluster
+import ipdb
 
 from agent_bvm import bvmAgent
 
 CLUSTER_THRESHOLD = .05
+BUCKET_THRESHOLD = .05
 EQUILIBRIUM_THRESHOLD = 5
+
 
 warnings.simplefilter('error', RuntimeWarning)
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -29,7 +32,7 @@ def getOpinion(model, agent_num, iss_num):
 
 def getMultimodalityStatisticClone(model):
     return getMultimodalityStatistic(model,
-        len(model.schedule.agents[0].opinions))
+            len(model.schedule.agents[0].opinions))
 
 def getMultimodalityStatisticOneAgreement(model):
     return getMultimodalityStatistic(model, 1)
@@ -60,7 +63,7 @@ def getNumPairwiseAgreements(model):
         for index2 in range(index1+1,len(agents)):
             # TODO: is CLUSTER_THRESHOLD the right thing to use here?
             agreements[agreementNum] = agents[index1].numAgreementsWith(
-                agents[index2], CLUSTER_THRESHOLD)
+                    agents[index2], CLUSTER_THRESHOLD)
             agreementNum += 1
     return agreements.tolist()
 
@@ -124,13 +127,12 @@ def returnHighOpinions(model, issueNum):
 # Return true if all agents have an identical opinion on this issue.
 def isIssueUniform(model, issueNum):
     return all([ math.isclose(model.schedule.agents[j].opinions[issueNum],
-            model.schedule.agents[0].opinions[issueNum]) for j in range(1, len(model.schedule.agents))])
+        model.schedule.agents[0].opinions[issueNum]) for j in range(1, len(model.schedule.agents))])
 
 
 def getNumClusters(model, issueNum):
     # Return the number of opinion clusters for the issue number passed.
     num_clusters = 0
-
     clustersList = []
     for i in range(model.num_agents):
         hasBeenAdded = False
@@ -161,6 +163,44 @@ def getNumClusters(model, issueNum):
                 num_clusters += 1
 
     return num_clusters
+
+def updateBuckets(model):
+    for a in model.schedule.agents:
+        print(f"{a}\t{model.buckets}")
+        if not model.buckets: #if buckets dict is empty
+            opinionKey = tuple(a.opinions)
+            model.buckets[opinionKey] = [a]
+        else: #buckets dict isn't empty
+            for bucket in model.buckets.items():
+                identical = True
+                opinionVals = bucket[0] #key of buckets dict
+                for i in range(0,model.num_issues):
+                    bucketOpinion = opinionVals[i]
+                    opinion = a.opinions[i]
+                    if abs(opinion-bucketOpinion)>BUCKET_THRESHOLD: #agent isn't identical to this bucket's opinions
+                        identical = False
+                        break
+
+                if identical: #add agent to this bucket
+                    #print("Theyre Identical")
+                    newKey = ()
+                    for i in range(model.num_issues):
+                        opinionAvg = (opinionVals[i] + a.opinions[i])/2
+                        newKey += (opinionAvg,)
+
+                    newVal = bucket[1]+[a]
+                    print("New Key: {}\tNew Val: {}".format(newKey, newVal))
+                    model.buckets[newKey] = newVal #set new bucket
+                    if newKey != opinionVals: #new key and old key arent the same, if they are the same, don't delete it
+                        del model.buckets[opinionVals] #delete old bucket
+                
+                    print(model.buckets[newKey])
+                    break
+            
+            if not identical: #agent doesn't belong to any existing buckets, so create a new bucket for this agent
+                #print("Not identical...creating new")
+                opinionKey = tuple(a.opinions)
+                model.buckets[opinionKey] = [a]
 
 
 def numNonUniformIssues(model):
@@ -210,7 +250,8 @@ class bvmModel(Model):
         self.equilibriumCounter= 0
         self.running = True
         self.clusterTracking = {} #key:(unique_id, issue) 
-        
+        self.buckets = {} #key: tuple of mean opinions for the bucket, value: list of agents in that bucket
+
         self.autogmm = AutoGMMCluster()
         # generate ER graph with N nodes and prob of edge of P
         self.G = nx.erdos_renyi_graph(n_agents, p)
@@ -222,11 +263,11 @@ class bvmModel(Model):
             agent = bvmAgent(i, self)
             self.G.nodes[i]["agent"] = agent
             self.schedule.add(agent)
-      
+
         reporters =  {"clustersforIssue_{}".format(i):
-            lambda model, issueNum=i:
-            getNumClusters(model,issueNum) for i in range(self.num_issues)}
-        
+                lambda model, issueNum=i:
+                getNumClusters(model,issueNum) for i in range(self.num_issues)}
+
         #autoGmmReporters = {"autogmmclustersforIssue_{}".format(i):lambda model, issueNum=i: doAutoGMM(model,issueNum) for i in range(self.num_issues)}
 
         repubs = {"low_iss_{}".format(i):lambda model, issueNum=i: returnLowOpinions(model,issueNum) for i in range(self.num_issues)}
@@ -236,10 +277,10 @@ class bvmModel(Model):
         #reporters.update(autoGmmReporters)
 
         self.datacollector = DataCollector(
-            model_reporters=reporters,
-            agent_reporters={}
-        )
-         
+                model_reporters=reporters,
+                agent_reporters={}
+                )
+
         self.datacollector._new_model_reporter("Steps", getSteps)
         #self.datacollector._new_model_reporter("assortativity", get_avg_assort)
         #self.datacollector._new_model_reporter("numberOfNonUniformIssues",
@@ -247,14 +288,14 @@ class bvmModel(Model):
         self.datacollector._new_model_reporter("persuasions", getPersuasions)
         self.datacollector._new_model_reporter("repulsions", getRepulsions)
         self.datacollector._new_model_reporter("multiModalityStatClone",
-            getMultimodalityStatisticClone)
+                getMultimodalityStatisticClone)
         self.datacollector._new_model_reporter("multiModalityStatAnticlone",
-            getMultimodalityStatisticAnticlone)
+                getMultimodalityStatisticAnticlone)
 
         self.datacollector._new_model_reporter("multiModalityStatOneAgreement",
-            getMultimodalityStatisticOneAgreement)
+                getMultimodalityStatisticOneAgreement)
         self.datacollector._new_model_reporter("multiModalityStatTwoAgreements",
-            getMultimodalityStatisticTwoAgreements)
+                getMultimodalityStatisticTwoAgreements)
 
         self.datacollector.collect(self)
 
@@ -282,63 +323,61 @@ class bvmModel(Model):
 
         self.steps += 1
 
-#lsteps, agents, p, issues, othresh, dthresh
-test = bvmModel(1000, 50, 0.3, 3, 0.10, 0.45)
+if __name__ == "__main__":
 
-for i in range(test.l_steps):
-    test.step()
-    if(test.running == False):
-        break
+    #lsteps, agents, p, issues, othresh, dthresh
+    test = bvmModel(500, 50, 0.3, 5, 0.10, 0.45)
 
-#printAllAgentOpinions(test)
-df = test.datacollector.get_model_vars_dataframe()
-df.to_csv("singleRun.csv")
-print(df)
-'''
-plt.figure()
-plt.plot(df['repulsions'], label='repulsions')
-plt.plot(df['persuasions'],label='persuasions')
-plt.xlabel('Time (steps)')
-plt.ylabel('Repulsions & Persuasions')
-plt.legend(loc='lower right')
-plt.show()
-'''
-'''
-fig, axs = plt.subplots(2, 2)
+    for i in range(test.l_steps):
+        test.step()
+        if(test.running == False):
+            break
+    
+    #printAllAgentOpinions(test)
+    df = test.datacollector.get_model_vars_dataframe()
+    df.to_csv("singleRun.csv")
+    print(df)
+    updateBuckets(test)
+    print("Buckets: ", test.buckets)
+    print("Number of buckets: ", len(test.buckets)) 
+    for i in test.buckets.items():
+        print(i[0])
+    '''
+    fig, axs = plt.subplots(2, 2)
 
-fig.suptitle('Republicans (Low Opinions) & Democrats (High Opinions)')
-axs[0,0].set_title('Opinion 0')
-axs[0,0].plot(df['Steps'],df['low_iss_0'], color='red')
-axs[0,0].plot(df['Steps'],df['high_iss_0'], color='blue')
-axs[1,0].set_title('Opinion 1')
-axs[1,0].plot(df['Steps'],df['low_iss_1'], color='red')
-axs[1,0].plot(df['Steps'],df['high_iss_1'], color='blue')
-axs[0,1].set_title('Opinion 2')
-axs[0,1].plot(df['Steps'],df['low_iss_2'], color='red')
-axs[0,1].plot(df['Steps'],df['high_iss_2'], color='blue')
-axs[1,1].set_title('Opinion 3')
-axs[1,1].plot(df['Steps'],df['low_iss_3'], color='red')
-axs[1,1].plot(df['Steps'],df['high_iss_3'], color='blue')
-'''
+    fig.suptitle('Republicans (Low Opinions) & Democrats (High Opinions)')
+    axs[0,0].set_title('Opinion 0')
+    axs[0,0].plot(df['Steps'],df['low_iss_0'], color='red')
+    axs[0,0].plot(df['Steps'],df['high_iss_0'], color='blue')
+    axs[1,0].set_title('Opinion 1')
+    axs[1,0].plot(df['Steps'],df['low_iss_1'], color='red')
+    axs[1,0].plot(df['Steps'],df['high_iss_1'], color='blue')
+    axs[0,1].set_title('Opinion 2')
+    axs[0,1].plot(df['Steps'],df['low_iss_2'], color='red')
+    axs[0,1].plot(df['Steps'],df['high_iss_2'], color='blue')
+    axs[1,1].set_title('Opinion 3')
+    axs[1,1].plot(df['Steps'],df['low_iss_3'], color='red')
+    axs[1,1].plot(df['Steps'],df['high_iss_3'], color='blue')
+    '''
 
-'''
-#set axis labels
-for ax in axs.flat:
-    ax.set(xlabel='Steps', ylabel='# of agents')
+    '''
+    #set axis labels
+    for ax in axs.flat:
+        ax.set(xlabel='Steps', ylabel='# of agents')
 
-#Hide x labels and tick labels for top plots and y ticks for right plots
-for ax in axs.flat:
-    ax.label_outer()
-fig.tight_layout()
-'''
+    #Hide x labels and tick labels for top plots and y ticks for right plots
+    for ax in axs.flat:
+        ax.label_outer()
+    fig.tight_layout()
+    '''
 
-plt.figure()
-plt.plot(df['multiModalityStatClone'], label='clones')
-plt.plot(df['multiModalityStatAnticlone'], label='anti-clones')
-plt.plot(df['multiModalityStatOneAgreement'], label='oneAgreements', color='green')
-plt.plot(df['multiModalityStatTwoAgreements'], label='TwoAgreements', color='red')
+    plt.figure()
+    plt.plot(df['multiModalityStatClone'], label='clones')
+    plt.plot(df['multiModalityStatAnticlone'], label='anti-clones')
+    plt.plot(df['multiModalityStatOneAgreement'], label='oneAgreements', color='green')
+    plt.plot(df['multiModalityStatTwoAgreements'], label='TwoAgreements', color='red')
 
-plt.xlabel('Time (steps)')
-plt.ylabel('# clones/anti-clones/1 Agreements/2 Agreements')
-plt.legend(loc='best')
-plt.show()
+    plt.xlabel('Time (steps)')
+    plt.ylabel('# clones/anti-clones/1 Agreements/2 Agreements')
+    plt.legend(loc='best')
+    plt.show()

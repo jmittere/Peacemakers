@@ -33,10 +33,17 @@ class bvmSuite():
         plt.ylabel('Frequencies')
         plt.legend(loc='best')
         plt.show()
-        
-        
-
-        
+            
+    def plotAvgClone_AntiCloneScatter(self,filename=None):
+        if filename!=None:
+            data = pd.read_csv(filename)
+        else:
+            data = self.data
+        plt.figure() 
+        plt.scatter(x=data['Clones'],y=data['Anticlones'], alpha=0.5)
+        plt.xlabel('Clones')
+        plt.ylabel('Anticlones')
+        plt.show()
         
         
 

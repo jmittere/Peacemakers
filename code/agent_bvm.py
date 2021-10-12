@@ -15,6 +15,9 @@ class bvmAgent(Agent):
             num = self.random.uniform(0, 1)
             self.opinions.append(num)
         self.pushOpinionsToGraph()
+    
+    def __repr__(self):
+        return "Agent {}".format(self.unique_id)
 
     def pushOpinionsToGraph(self):
         # Sets a node attribute in network x graph for each issue.

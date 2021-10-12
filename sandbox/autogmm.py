@@ -8,6 +8,7 @@ import time
 from graspologic.cluster.autogmm import AutoGMMCluster
 thing = AutoGMMCluster(max_iter=5)
 x = np.random.uniform(0,10,(20,1))
+print(x)
 start = time.time()
 cluster = thing.fit(x)
 print(f"That took {time.time() - start} milliseconds.")
