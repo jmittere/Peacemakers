@@ -22,11 +22,7 @@ from agent_bvm import bvmAgent
 # The minimum difference in the opinion values of two agents in order for those
 # opinions to be considered in two different clusters.
 CLUSTER_THRESHOLD = .05
-<<<<<<< HEAD
 BUCKET_THRESHOLD = .05
-EQUILIBRIUM_THRESHOLD = 5
-
-=======
 
 # The number of consecutive iterations without any persuasions/replusions that
 # the model will continue to run before stopping.
@@ -36,8 +32,6 @@ EQUILIBRIUM_THRESHOLD = 5
 # (and 1-this would be considered "low").
 EXTREME_THRESHOLD = .9
 
->>>>>>> 1640a7c762f4803ab932a47000b2823ec2c0a7b9
-
 warnings.simplefilter('error', RuntimeWarning)
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
@@ -45,15 +39,12 @@ def getOpinion(model, agent_num, iss_num):
     # Return the opinion value of a specific agent on a specific issue.
     return model.schedule.agents[agent_num].opinions[iss_num]
 
-<<<<<<< HEAD
 def getMultimodalityStatisticClone(model):
     return getMultimodalityStatistic(model,
             len(model.schedule.agents[0].opinions))
 
 def getMultimodalityStatisticOneAgreement(model):
     return getMultimodalityStatistic(model, 1)
-=======
->>>>>>> 1640a7c762f4803ab932a47000b2823ec2c0a7b9
 
 def getMultimodalityStatistic(model):
     # Return a statistic estimating the evidence for multi-modality in the
@@ -310,12 +301,8 @@ class bvmModel(Model):
             agent = bvmAgent(i, self)
             self.G.nodes[i]["agent"] = agent
             self.schedule.add(agent)
-<<<<<<< HEAD
 
-=======
-      
         # create all the mesa "reporters" to gather stats
->>>>>>> 1640a7c762f4803ab932a47000b2823ec2c0a7b9
         reporters =  {"clustersforIssue_{}".format(i):
                 lambda model, issueNum=i:
                 getNumClusters(model,issueNum) for i in range(self.num_issues)}

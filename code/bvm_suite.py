@@ -10,7 +10,7 @@ class bvmSuite():
                 bvmModel, 
                 fixed_parameters = fixedParams,
                 iterations=iters,
-                model_reporters = {'Steps':getSteps,'Anticlones':getMultimodalityStatisticAnticlone, 'Clones':getMultimodalityStatisticClone}
+                model_reporters = {'Steps':getSteps,'Anticlones':getNumAnticlonePairs, 'Clones':getNumClonePairs}
                 )
         self.data = None
 
@@ -40,6 +40,7 @@ class bvmSuite():
         else:
             data = self.data
         plt.figure() 
+        plt.title('Clones and Anti Clones with o=.20, d=.60')
         plt.scatter(x=data['Clones'],y=data['Anticlones'], alpha=0.5)
         plt.xlabel('Clones')
         plt.ylabel('Anticlones')
