@@ -17,12 +17,19 @@ from graspologic.cluster.autogmm import AutoGMMCluster
 
 from agent_bvm import bvmAgent
 
+
+# The minimum difference in the opinion values of two agents in order for those
+# opinions to be considered in two different clusters.
 CLUSTER_THRESHOLD = .05
+
+# The number of consecutive iterations without any persuasions/replusions that
+# the model will continue to run before stopping.
 EQUILIBRIUM_THRESHOLD = 5
 
 # The value of an opinion an agent would need to have to be considered "high"
 # (and 1-this would be considered "low").
 EXTREME_THRESHOLD = .9
+
 
 warnings.simplefilter('error', RuntimeWarning)
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -31,27 +38,40 @@ def getOpinion(model, agent_num, iss_num):
     # Return the opinion value of a specific agent on a specific issue.
     return model.schedule.agents[agent_num].opinions[iss_num]
 
-def getMultimodalityStatisticClone(model):
-    return getMultimodalityStatistic(model,
-        len(model.schedule.agents[0].opinions))
 
-def getMultimodalityStatisticOneAgreement(model):
-    return getMultimodalityStatistic(model, 1)
-
-def getMultimodalityStatisticTwoAgreements(model):
-    return getMultimodalityStatistic(model, 2)
-
-def getMultimodalityStatisticAnticlone(model):
-    return getMultimodalityStatistic(model,0)
-
-def getMultimodalityStatistic(model, target):
+def getMultimodalityStatistic(model):
     # Return a statistic estimating the evidence for multi-modality in the
     # number of opinion agreements that each agent has pairwise with every
     # other.
-    pwa = getNumPairwiseAgreements(model)
+    #pwa = getNumPairwiseAgreements(model)
 
-    # For now, use a blunt object: number of anti-clones and clones.
-    return sum([ a == target for a in pwa ])
+    # For now, just use a blunt object: number of anti-clones and clones.
+    return (getNumAgentPairsWithKAgreements(model, 0) +
+        getNumAgentPairsWithKAgreements(model, model.num_issues))
+
+def getNumClonePairs(model):
+    # Return the number of pairs of agents who "agree" (opinion in the same
+    # cluster) on every issue.
+    return getNumAgentPairsWithKAgreements(model,
+        len(model.schedule.agents[0].opinions))
+
+def getNumAnticlonePairs(model):
+    # Return the number of pairs of agents who "disagree" (opinion in different
+    # clusters) on every issue.
+    return getNumAgentPairsWithKAgreements(model,0)
+
+def getNumAgentPairsWithKAgreementsClosure(k):
+    # Return a function, which takes only a model as an argument, which will
+    # compute the number of pairs of agents who "agree" (opinion in the same
+    # cluster) on exactly k issues.
+    return lambda model: getNumAgentPairsWithKAgreements(model, k)
+
+def getNumAgentPairsWithKAgreements(model, k):
+    # Return the number of pairs of agents who "agree" (opinion in the same
+    # cluster) on exactly k issues.
+    pwa = getNumPairwiseAgreements(model)
+    return sum([ a == k for a in pwa ])
+
 
 def getNumPairwiseAgreements(model):
     # For every pair of agents in the entire model, determine the number of
@@ -82,7 +102,8 @@ def get_avg_assort(model):
             assorts.append(0)
         else:
             try:
-                assort = nx.numeric_assortativity_coefficient(model.G,"iss_{}".format(i))
+                assort = nx.numeric_assortativity_coefficient(model.G,
+                    "iss_{}".format(i))
                 assorts.append(assort)
             except RuntimeWarning:
                 print("Runtime Warning...")
@@ -107,7 +128,7 @@ def doAutoGMM(model, issueNum):
 def returnPersuasionsPerCapita(model):
     return model.persuasions / model.num_agents
 
-def returnLowOpinions(model, issueNum):
+def returnNumLowOpinions(model, issueNum):
     #returns the number of agents within EXTREME_THRESHOLD of 0
     agents = model.schedule.agents
     agentCount=0
@@ -116,7 +137,7 @@ def returnLowOpinions(model, issueNum):
             agentCount+=1
     return agentCount
 
-def returnHighOpinions(model, issueNum):
+def returnNumHighOpinions(model, issueNum):
     #returns the number of agents within EXTREME_THRESHOLD of 1
     agents = model.schedule.agents
     agentCount=0
@@ -125,7 +146,7 @@ def returnHighOpinions(model, issueNum):
             agentCount+=1
     return agentCount
 
-def returnModerateOpinions(model, issueNum):
+def returnNumModerateOpinions(model, issueNum):
     #returns number of agents within (1-EXTREME_THRESHOLD,EXTREME_THRESHOLD)
     agents = model.schedule.agents
     agentCount=0
@@ -202,12 +223,12 @@ def getSteps(model):
 
 class bvmModel(Model):
 
-    # N: # of agents
-    # P: prob of edge for Erdos-renyi
-    # I: # of issues for each agent
-    # T: # of simulation iterations
-    # C: openness threshold for agents
-    # D: disgust threshold for agents
+    # l_steps: max # of simulation iterations 
+    # n_agents: # of agents
+    # p: prob of edge for Erdos-renyi
+    # issues: # of issues for each agent
+    # o: openness threshold for agents
+    # d: disgust threshold for agents
     def __init__(self, l_steps, n_agents, p, issues, o, d, seed=None):
         super().__init__()
         self.l_steps = l_steps
@@ -225,26 +246,33 @@ class bvmModel(Model):
         self.clusterTracking = {} #key:(unique_id, issue) 
         
         self.autogmm = AutoGMMCluster()
-        # generate ER graph with N nodes and prob of edge of P
+        # generate ER graph with n_agents nodes and prob of edge of p
         self.G = nx.erdos_renyi_graph(n_agents, p)
         while not nx.is_connected(self.G):
             self.G = nx.erdos_renyi_graph(n_agents, p)
 
-        # add N number of agents
+        # instantiate and add agents
         for i in range(self.num_agents):
             agent = bvmAgent(i, self)
             self.G.nodes[i]["agent"] = agent
             self.schedule.add(agent)
       
+        # create all the mesa "reporters" to gather stats
         reporters =  {"clustersforIssue_{}".format(i):
             lambda model, issueNum=i:
             getNumClusters(model,issueNum) for i in range(self.num_issues)}
         
         #autoGmmReporters = {"autogmmclustersforIssue_{}".format(i):lambda model, issueNum=i: doAutoGMM(model,issueNum) for i in range(self.num_issues)}
 
-        repubs = {"low_iss_{}".format(i):lambda model, issueNum=i: returnLowOpinions(model,issueNum) for i in range(self.num_issues)}
-        dems = {"high_iss_{}".format(i):lambda model, issueNum=i: returnHighOpinions(model,issueNum) for i in range(self.num_issues)}
-        mods = {"mod_iss_{}".format(i):lambda model, issueNum=i: returnModerateOpinions(model,issueNum) for i in range(self.num_issues)}
+        repubs = {"low_iss_{}".format(i):
+            lambda model, issueNum=i: returnNumLowOpinions(model,issueNum)
+                for i in range(self.num_issues)}
+        dems = {"high_iss_{}".format(i):
+            lambda model, issueNum=i:returnNumHighOpinions(model,issueNum)
+                for i in range(self.num_issues)}
+        mods = {"mod_iss_{}".format(i):
+            lambda model, issueNum=i: returnNumModerateOpinions(model,issueNum)
+                for i in range(self.num_issues)}
         reporters.update(repubs)
         reporters.update(dems)
         reporters.update(mods)
@@ -260,15 +288,15 @@ class bvmModel(Model):
         #    numNonUniformIssues)
         self.datacollector._new_model_reporter("persuasions", getPersuasions)
         self.datacollector._new_model_reporter("repulsions", getRepulsions)
-        self.datacollector._new_model_reporter("multiModalityStatClone",
-            getMultimodalityStatisticClone)
-        self.datacollector._new_model_reporter("multiModalityStatAnticlone",
-            getMultimodalityStatisticAnticlone)
+        self.datacollector._new_model_reporter("numClonePairs",
+            getNumClonePairs)
+        self.datacollector._new_model_reporter("numAnticlonePairs",
+            getNumAnticlonePairs)
 
-        self.datacollector._new_model_reporter("multiModalityStatOneAgreement",
-            getMultimodalityStatisticOneAgreement)
-        self.datacollector._new_model_reporter("multiModalityStatTwoAgreements",
-            getMultimodalityStatisticTwoAgreements)
+        self.datacollector._new_model_reporter("numOneAgreementPairs",
+            getNumAgentPairsWithKAgreementsClosure(1))
+        self.datacollector._new_model_reporter("numTwoAgreementPairs",
+            getNumAgentPairsWithKAgreementsClosure(2))
 
         self.datacollector.collect(self)
 
@@ -280,8 +308,8 @@ class bvmModel(Model):
         if self.influencesLastStep == 0:
             self.equilibriumCounter += 1
         else:
-            # Reset equilibrium counter if there are persuasions
-            #or repulsions still happening.
+            # Reset equilibrium counter if there are persuasions or repulsions
+            # still happening.
             self.equilibriumCounter = 0
 
         self.datacollector.collect(self)
@@ -290,7 +318,8 @@ class bvmModel(Model):
         if self.l_steps == self.steps + 1:
             self.running = False
 
-        # Stop if there have been no persuasions for longer than threshold.
+        # Stop if there have been no persuasions/replusion for longer than
+        # threshold.
         if self.equilibriumCounter > EQUILIBRIUM_THRESHOLD:
             self.running = False
 
@@ -351,10 +380,10 @@ fig.tight_layout()
 '''
 
 plt.figure()
-plt.plot(df['multiModalityStatClone'], label='clones')
-plt.plot(df['multiModalityStatAnticlone'], label='anti-clones')
-plt.plot(df['multiModalityStatOneAgreement'], label='oneAgreements', color='green')
-plt.plot(df['multiModalityStatTwoAgreements'], label='TwoAgreements', color='red')
+plt.plot(df['numClonePairs'], label='clones')
+plt.plot(df['numAnticlonePairs'], label='anti-clones')
+plt.plot(df['numOneAgreementPairs'], label='oneAgreements', color='green')
+plt.plot(df['numTwoAgreementPairs'], label='TwoAgreements', color='red')
 
 plt.xlabel('Time (steps)')
 plt.ylabel('# clones/anti-clones/1 Agreements/2 Agreements')
