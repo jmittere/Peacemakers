@@ -204,7 +204,7 @@ def getNumClusters(model, issueNum):
 
 def updateBuckets(model):
     for a in model.schedule.agents:
-        print(f"{a}\t{model.buckets}")
+        #print(f"{a}\t{model.buckets}")
         if not model.buckets: #if buckets dict is empty
             opinionKey = tuple(a.opinions)
             model.buckets[opinionKey] = [a]
@@ -227,12 +227,12 @@ def updateBuckets(model):
                         newKey += (opinionAvg,)
 
                     newVal = bucket[1]+[a]
-                    print("New Key: {}\tNew Val: {}".format(newKey, newVal))
+                    #print("New Key: {}\tNew Val: {}".format(newKey, newVal))
                     model.buckets[newKey] = newVal #set new bucket
                     if newKey != opinionVals: #new key and old key arent the same, if they are the same, don't delete it
                         del model.buckets[opinionVals] #delete old bucket
                 
-                    print(model.buckets[newKey])
+                    #print(model.buckets[newKey])
                     break
             
             if not identical: #agent doesn't belong to any existing buckets, so create a new bucket for this agent
@@ -374,7 +374,7 @@ class bvmModel(Model):
 if __name__ == "__main__":
 
     #lsteps, agents, p, issues, othresh, dthresh
-    test = bvmModel(500, 50, 0.3, 5, 0.10, 0.45)
+    test = bvmModel(500, 50, 0.3, 3, 0.10, 0.40)
 
     for i in range(test.l_steps):
         test.step()
