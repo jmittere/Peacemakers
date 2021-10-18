@@ -41,6 +41,8 @@ class bvmSuite():
             data = self.data
         plt.figure() 
         plt.title('Clones and Anti Clones with o=.20, d=.60')
+        plt.xlim(-20,max(data['Clones'])+20) 
+        plt.ylim(-20,max(data['Anticlones'])+20) 
         plt.scatter(x=data['Clones'],y=data['Anticlones'], alpha=0.5)
         plt.xlabel('Clones')
         plt.ylabel('Anticlones')
