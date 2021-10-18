@@ -125,6 +125,9 @@ def getAllOpinions(model, issueNum):
     return oList
 
 def doAutoGMM(model, issueNum):
+    if (model.steps%4) != 0:
+        return None
+
     oList = getAllOpinions(model,issueNum) #get all opinions for an issue
     opinion_arr = np.array(oList)
     opinion_arr = opinion_arr.reshape(model.num_agents,1)
@@ -290,7 +293,9 @@ class bvmModel(Model):
         self.clusterTracking = {} #key:(unique_id, issue) 
         self.buckets = {} #key: tuple of mean opinions for the bucket, value: list of agents in that bucket
 
-        self.autogmm = AutoGMMCluster()
+        self.autogmm = AutoGMMCluster(affinity='euclidean', 
+                linkage='ward', covariance_type='full')
+
         # generate ER graph with n_agents nodes and prob of edge of p
         self.G = nx.erdos_renyi_graph(n_agents, p)
         while not nx.is_connected(self.G):
@@ -307,7 +312,7 @@ class bvmModel(Model):
                 lambda model, issueNum=i:
                 getNumClusters(model,issueNum) for i in range(self.num_issues)}
 
-        #autoGmmReporters = {"autogmmclustersforIssue_{}".format(i):lambda model, issueNum=i: doAutoGMM(model,issueNum) for i in range(self.num_issues)}
+        autoGmmReporters = {"autogmmclustersforIssue_{}".format(i):lambda model, issueNum=i: doAutoGMM(model,issueNum) for i in range(self.num_issues)}
 
         repubs = {"low_iss_{}".format(i):
             lambda model, issueNum=i: returnNumLowOpinions(model,issueNum)
@@ -321,6 +326,7 @@ class bvmModel(Model):
         reporters.update(repubs)
         reporters.update(dems)
         reporters.update(mods)
+        reporters.update(autoGmmReporters)
 
         self.datacollector = DataCollector(
                 model_reporters=reporters,
