@@ -405,7 +405,7 @@ class bvmModel(Model):
 if __name__ == "__main__":
 
     #lsteps, agents, p, issues, othresh, dthresh
-    test = bvmModel(500, 100, 0.3, 3, 0.05, 0.75)
+    test = bvmModel(500, 100, 0.3, 3, 0.05, 0.65)
 
     for i in range(test.l_steps):
         test.step()
