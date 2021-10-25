@@ -230,14 +230,12 @@ def updateBuckets(model):
                         break
 
                 if identical: #add agent to this bucket
-                    #print("Theyre Identical")
                     newKey = ()
                     for i in range(model.num_issues):
-                        opinionAvg = (opinionVals[i] + a.opinions[i])/2
+                        opinionAvg = ((opinionVals[i]*len(bucket[1])) + a.opinions[i])/(len(bucket[1])+1)
                         newKey += (opinionAvg,)
 
                     newVal = bucket[1]+[a]
-                    #print("New Key: {}\tNew Val: {}".format(newKey, newVal))
                     model.buckets[newKey] = newVal #set new bucket
                     if newKey != opinionVals: #new key and old key arent the same, if they are the same, don't delete it
                         del model.buckets[opinionVals] #delete old bucket
@@ -405,7 +403,7 @@ class bvmModel(Model):
 if __name__ == "__main__":
 
     #lsteps, agents, p, issues, othresh, dthresh
-    test = bvmModel(500, 100, 0.3, 3, 0.05, 0.65)
+    test = bvmModel(500, 100, 0.3, 3, 0.1, 0.55)
 
     for i in range(test.l_steps):
         test.step()
