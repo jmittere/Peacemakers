@@ -12,6 +12,7 @@ class bvmSweep():
                 iterations=iters,
                 model_reporters = {'Buckets':updateBuckets}
                 )
+        self.iterations = iters
 
 
     def run(self):
@@ -32,7 +33,7 @@ class bvmSweep():
         plt.xlabel("Openness Threshold")
         plt.ylabel("Disgust Threshold")
         colorBar = plt.colorbar()
-        colorBar.set_label('Number of Buckets x Size of parameter sweep')
+        colorBar.set_label('Sum of Number of Buckets for each set of Params')
         plt.show()
 
 

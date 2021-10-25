@@ -16,6 +16,7 @@ suite.plotAvgClone_AntiCloneScatter('suiteData.csv')
 '''
 sweep = bvmSweep({"p":.3,"issues":3, "l_steps":1000, "n_agents":100},{"o":np.arange(0.05,0.45,0.05), "d":np.arange(0.30,0.85,0.05)}, 4)
 
+
 #sweep.run()
 #data = sweep.getData()
 #data.to_csv('sweepData.csv')
