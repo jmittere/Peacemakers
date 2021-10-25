@@ -10,16 +10,30 @@ class bvmSweep():
                 fixed_parameters = fixedParams,
                 variable_parameters = variableParams,
                 iterations=iters,
-                model_reporters = {'avg_assort':get_avg_assort, 'opinionClustering':numNonUniformIssues}
+                model_reporters = {'Buckets':updateBuckets}
                 )
 
 
     def run(self):
         self.batch_run.run_all()
+        self.data = self.getData()
 
     def getData(self):
         run_data = self.batch_run.get_model_vars_dataframe()
         return run_data 
+    
+    def plotBucketHeatmap(self,filename=None):
+        if filename!=None:
+            data = pd.read_csv(filename)
+        else:
+            data = self.data
+
+        plt.hist2d(x=data['o'],y=data['d'],weights=data['Buckets'], cmap="viridis", bins=[len(data['o'].unique()),len(data['d'].unique())])
+        plt.xlabel("Openness Threshold")
+        plt.ylabel("Disgust Threshold")
+        colorBar = plt.colorbar()
+        colorBar.set_label('Number of Buckets x Size of parameter sweep')
+        plt.show()
 
 
 
