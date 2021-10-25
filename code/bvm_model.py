@@ -125,13 +125,20 @@ def getAllOpinions(model, issueNum):
     return oList
 
 def doAutoGMM(model, issueNum):
-    if (model.steps%4) != 0:
+    if (model.steps%2) != 0:
         return None
 
     oList = getAllOpinions(model,issueNum) #get all opinions for an issue
     opinion_arr = np.array(oList)
     opinion_arr = opinion_arr.reshape(model.num_agents,1)
-    clusters = model.autogmm.fit(opinion_arr) #perform AutoGMM algorithm
+    try:
+        clusters = model.autogmm.fit(opinion_arr) #perform AutoGMM algorithm
+    except RuntimeWarning as rw:
+        print("Opinions for Issue {} in step {}: {}".format(issueNum,model.steps,opinion_arr))
+        print("RuntimeWarning: ", rw)
+        return None
+
+
     #print("There were {} clusters for issue {} in step {} ".format(clusters.n_components, issueNum, model.steps))
     return clusters.n_components_
 
@@ -242,7 +249,25 @@ def updateBuckets(model):
                 #print("Not identical...creating new")
                 opinionKey = tuple(a.opinions)
                 model.buckets[opinionKey] = [a]
+    
+    return len(model.buckets)
 
+def plotBuckets(model):
+   fig = plt.figure()
+   xlabels = []
+   for j in model.buckets.keys():
+       roundedKey = ""
+       for element in j:
+           roundedKey += str(round(element,2)) + ", "
+       roundedKey = roundedKey[:-2] #remove comma and space
+       xlabels.append(roundedKey)
+   buckets = [len(i) for i in model.buckets.values()]
+   plt.bar(xlabels, buckets, width=0.4)
+   plt.title('Opinion Buckets')
+   plt.ylabel('Number of Agents')
+   plt.xlabel('Opinion Values for the Bucket')
+   plt.show()
+   
 
 def numNonUniformIssues(model):
     # Returns the number of issues on which all agents don't agree (within the
@@ -312,7 +337,7 @@ class bvmModel(Model):
                 lambda model, issueNum=i:
                 getNumClusters(model,issueNum) for i in range(self.num_issues)}
 
-        autoGmmReporters = {"autogmmclustersforIssue_{}".format(i):lambda model, issueNum=i: doAutoGMM(model,issueNum) for i in range(self.num_issues)}
+        #autoGmmReporters = {"autogmmclustersforIssue_{}".format(i):lambda model, issueNum=i: doAutoGMM(model,issueNum) for i in range(self.num_issues)}
 
         repubs = {"low_iss_{}".format(i):
             lambda model, issueNum=i: returnNumLowOpinions(model,issueNum)
@@ -326,7 +351,7 @@ class bvmModel(Model):
         reporters.update(repubs)
         reporters.update(dems)
         reporters.update(mods)
-        reporters.update(autoGmmReporters)
+        #reporters.update(autoGmmReporters)
 
         self.datacollector = DataCollector(
                 model_reporters=reporters,
@@ -380,7 +405,7 @@ class bvmModel(Model):
 if __name__ == "__main__":
 
     #lsteps, agents, p, issues, othresh, dthresh
-    test = bvmModel(500, 50, 0.3, 3, 0.10, 0.40)
+    test = bvmModel(500, 100, 0.3, 3, 0.05, 0.75)
 
     for i in range(test.l_steps):
         test.step()
@@ -396,6 +421,8 @@ if __name__ == "__main__":
     print("Number of buckets: ", len(test.buckets)) 
     for i in test.buckets.items():
         print("Bucket Label: ", i[0])
+    
+    plotBuckets(test)
     '''
     fig, axs = plt.subplots(2, 2)
 
