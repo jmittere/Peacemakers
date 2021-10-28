@@ -1,5 +1,4 @@
-# bvm_model.py
-# Phase 1
+#bvm_model.py
 import warnings
 from mesa import Model
 from mesa import agent
@@ -16,7 +15,7 @@ from sklearn.metrics import silhouette_samples, silhouette_score
 from graspologic.cluster.autogmm import AutoGMMCluster
 import ipdb
 
-from agent_bvm import bvmAgent
+from cross_issue_agent import CrossIssueAgent
 
 
 # The minimum difference in the opinion values of two agents in order for those
@@ -299,7 +298,7 @@ class bvmModel(Model):
     # issues: # of issues for each agent
     # o: openness threshold for agents
     # d: disgust threshold for agents
-    def __init__(self, l_steps, n_agents, p, issues, o, d, seed=None):
+    def __init__(self, l_steps, n_agents, p, issues, o, d, CI2=True, seed=None):
         super().__init__()
         self.l_steps = l_steps
         self.num_agents = n_agents
@@ -315,6 +314,7 @@ class bvmModel(Model):
         self.running = True
         self.clusterTracking = {} #key:(unique_id, issue) 
         self.buckets = {} #key: tuple of mean opinions for the bucket, value: list of agents in that bucket
+        self.CI2 = CI2
 
         self.autogmm = AutoGMMCluster(affinity='euclidean', 
                 linkage='ward', covariance_type='full')
@@ -326,7 +326,12 @@ class bvmModel(Model):
 
         # instantiate and add agents
         for i in range(self.num_agents):
-            agent = bvmAgent(i, self)
+            #CI2 or just I2
+            if(self.CI2):
+                agent = CrossIssueAgent(i, self)
+            else:
+                agent = SameIssueAgent(i, self)
+            
             self.G.nodes[i]["agent"] = agent
             self.schedule.add(agent)
 
@@ -406,7 +411,7 @@ class bvmModel(Model):
 if __name__ == "__main__":
 
     #lsteps, agents, p, issues, othresh, dthresh
-    test = bvmModel(1000, 100, 0.3, 3, 0.1, 0.55)
+    test = bvmModel(1000, 100, 0.3, 3, 0.1, 0.55, True)
 
     for i in range(test.l_steps):
         test.step()

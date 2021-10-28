@@ -1,4 +1,3 @@
-from agent_bvm import bvmAgent
 from bvm_model import *
 from mesa.batchrunner import BatchRunner
 

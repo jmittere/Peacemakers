@@ -1,4 +1,4 @@
-#agent_bvm.py
+#cross_issue_agent.py
 
 from mesa import Agent
 import networkx as nx
@@ -6,7 +6,7 @@ import networkx as nx
 MIN_OPINION_MOVEMENT_FOR_PERSUASION = .03
 MIN_OPINION_MOVEMENT_FOR_REPULSION = .03
 
-class bvmAgent(Agent):
+class CrossIssueAgent(Agent):
 
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)

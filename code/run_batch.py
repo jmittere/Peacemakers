@@ -1,4 +1,4 @@
-from agent_bvm import bvmAgent 
+from cross_issue_agent import CrossIssueAgent 
 from bvm_model import *
 from mesa.batchrunner import BatchRunner
 

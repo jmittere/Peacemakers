@@ -2,12 +2,11 @@ from bvm_suite import *
 from bvm_sweep import *
 import pandas as pd
 import numpy as np
-'''
-suite = bvmSuite({"p":.3, "o":.20, "d":.60,"issues":3, "l_steps":1000, "n_agents":50}, 100)
-#suite.run()
-#x = suite.getData()
-#x.to_csv('suiteData.csv')
-x = pd.read_csv('suiteData.csv')
+suite = bvmSuite({"p":.3, "o":.20, "d":.60,"issues":3, "l_steps":1000, "n_agents":50}, 25)
+suite.run()
+x = suite.getData()
+x.to_csv('suiteData.csv')
+#x = pd.read_csv('suiteData.csv')
 
 print(x)
 
@@ -23,3 +22,4 @@ sweep = bvmSweep({"p":.3,"issues":3, "l_steps":1000, "n_agents":100},{"o":np.ara
 data = pd.read_csv('sweepData.csv')
 print(data)
 sweep.plotBucketHeatmap('sweepData.csv')
+'''
