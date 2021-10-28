@@ -57,8 +57,7 @@ class CrossIssueAgent(Agent):
             # Yes, the two agents are similar enough on their comparison issue
             # to warrant this agent being attracted to the influencer on the
             # persuasion issue. Split the difference.
-            self.opinions[persuade_index] = round(
-                (my_persuade_val + influencer_persuade_val)/2,2)
+            self.opinions[persuade_index] = (my_persuade_val + influencer_persuade_val)/2
             if (abs(my_persuade_val - self.opinions[persuade_index]) <
                 MIN_OPINION_MOVEMENT_FOR_PERSUASION):
                 #doesn't count as persuasion

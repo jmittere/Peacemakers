@@ -51,8 +51,7 @@ class SameIssueAgent(Agent):
             # Yes, the two agents are similar enough on their issue
             # to warrant this agent being attracted to the influencer on the
             # issue. Split the difference.
-            self.opinions[index] = round(
-                (my_val + influencer_val)/2,2)
+            self.opinions[index] = (my_val + influencer_val)/2
             if (abs(my_val - self.opinions[index]) <
                 MIN_OPINION_MOVEMENT_FOR_PERSUASION):
                 #doesn't count as persuasion
