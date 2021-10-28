@@ -232,14 +232,12 @@ def updateBuckets(model):
                         break
 
                 if identical: #add agent to this bucket
-                    #print("Theyre Identical")
                     newKey = ()
                     for i in range(model.num_issues):
-                        opinionAvg = (opinionVals[i] + a.opinions[i])/2
+                        opinionAvg = ((opinionVals[i]*len(bucket[1])) + a.opinions[i])/(len(bucket[1])+1)
                         newKey += (opinionAvg,)
 
                     newVal = bucket[1]+[a]
-                    #print("New Key: {}\tNew Val: {}".format(newKey, newVal))
                     model.buckets[newKey] = newVal #set new bucket
                     if newKey != opinionVals: #new key and old key arent the same, if they are the same, don't delete it
                         del model.buckets[opinionVals] #delete old bucket
@@ -361,6 +359,7 @@ class bvmModel(Model):
                 )
 
         self.datacollector._new_model_reporter("Steps", getSteps)
+        self.datacollector._new_model_reporter("Buckets", updateBuckets)
         #self.datacollector._new_model_reporter("assortativity", get_avg_assort)
         #self.datacollector._new_model_reporter("numberOfNonUniformIssues",
         #    numNonUniformIssues)
@@ -383,6 +382,8 @@ class bvmModel(Model):
     def step(self):
         self.influencesLastStep = 0
         self.schedule.step()
+        self.buckets = {} #TODO: fix buckets to persist through steps
+        '''If this line is removed, the buckets do not get overwritten and there will be too many buckets due to the different bucket labels'''
 
         if self.influencesLastStep == 0:
             self.equilibriumCounter += 1
@@ -407,7 +408,7 @@ class bvmModel(Model):
 if __name__ == "__main__":
 
     #lsteps, agents, p, issues, othresh, dthresh
-    test = bvmModel(500, 100, 0.3, 3, 0.05, 0.65)
+    test = bvmModel(1000, 100, 0.3, 3, 0.1, 0.55)
 
     for i in range(test.l_steps):
         test.step()
@@ -418,7 +419,7 @@ if __name__ == "__main__":
     df = test.datacollector.get_model_vars_dataframe()
     df.to_csv("singleRun.csv")
     print(df)
-    updateBuckets(test)
+    #updateBuckets(test)
     print("Buckets: ", test.buckets)
     print("Number of buckets: ", len(test.buckets)) 
 
@@ -464,4 +465,8 @@ if __name__ == "__main__":
     plt.xlabel('Time (steps)')
     plt.ylabel('# clones/anti-clones/1 Agreements/2 Agreements')
     plt.legend(loc='best')
+    
+    ax2 = ax.twinx()
+    ax2.plot(df['Buckets'], label='Buckets', color='maroon')
+    ax2.set_ylabel("Number of Buckets", color='maroon')
     plt.show()
