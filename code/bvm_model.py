@@ -18,7 +18,7 @@ from graspologic.cluster.autogmm import AutoGMMCluster
 import ipdb
 
 from cross_issue_agent import CrossIssueAgent
-
+from same_issue_agent import SameIssueAgent
 
 # The minimum difference in the opinion values of two agents in order for those
 # opinions to be considered in two different clusters.
@@ -413,7 +413,7 @@ class bvmModel(Model):
 if __name__ == "__main__":
 
     #lsteps, agents, p, issues, othresh, dthresh
-    test = bvmModel(1000, 100, 0.3, 3, 0.1, 0.55, True)
+    test = bvmModel(1000, 100, 0.3, 3, 0.15, 0.55, True)
 
     for i in range(test.l_steps):
         test.step()
@@ -430,46 +430,19 @@ if __name__ == "__main__":
 
     for b,cnt in test.buckets.items():
         print(f"{len(cnt)} agents in Bucket: {b}")
-    '''
-    fig, axs = plt.subplots(2, 2)
 
-    fig.suptitle('Republicans (Low Opinions) & Democrats (High Opinions)')
-    axs[0,0].set_title('Opinion 0')
-    axs[0,0].plot(df['Steps'],df['low_iss_0'], color='red')
-    axs[0,0].plot(df['Steps'],df['high_iss_0'], color='blue')
-    axs[1,0].set_title('Opinion 1')
-    axs[1,0].plot(df['Steps'],df['low_iss_1'], color='red')
-    axs[1,0].plot(df['Steps'],df['high_iss_1'], color='blue')
-    axs[0,1].set_title('Opinion 2')
-    axs[0,1].plot(df['Steps'],df['low_iss_2'], color='red')
-    axs[0,1].plot(df['Steps'],df['high_iss_2'], color='blue')
-    axs[1,1].set_title('Opinion 3')
-    axs[1,1].plot(df['Steps'],df['low_iss_3'], color='red')
-    axs[1,1].plot(df['Steps'],df['high_iss_3'], color='blue')
-    '''
-
-    '''
-    #set axis labels
-    for ax in axs.flat:
-        ax.set(xlabel='Steps', ylabel='# of agents')
-
-    #Hide x labels and tick labels for top plots and y ticks for right plots
-    for ax in axs.flat:
-        ax.label_outer()
-    fig.tight_layout()
-    '''
-    plt.figure()
-    plt.plot(df['numClonePairs'], label='clones')
-    plt.plot(df['numAnticlonePairs'], label='anti-clones')
+    fig, ax = plt.subplots()
+    ax.plot(df['numClonePairs'], label='clones')
+    ax.plot(df['numAnticlonePairs'], label='anti-clones')
     colors = get_cmap('Greys')
     for numAgreements in range(1,test.num_issues):
-        plt.plot(df[f'num{numAgreements}AgreementPairs'],
+        ax.plot(df[f'num{numAgreements}AgreementPairs'],
             label=f'{numAgreements} agreements' if numAgreements > 1 else
                 '1 agreement', color=colors(numAgreements/test.num_issues))
 
-    plt.xlabel('Time (steps)')
-    plt.ylabel('# clones/anti-clones/1 Agreements/2 Agreements')
-    plt.legend(loc='best')
+    ax.set_xlabel('Time (steps)')
+    ax.set_ylabel('# clones/anti-clones/1 Agreements/2 Agreements')
+    ax.legend(loc='best')
     
     ax2 = ax.twinx()
     ax2.plot(df['Buckets'], label='Buckets', color='maroon')

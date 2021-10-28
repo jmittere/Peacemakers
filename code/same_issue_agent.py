@@ -39,7 +39,7 @@ class SameIssueAgent(Agent):
 
         index = self.random.randint(0, int(self.model.num_issues)-1)
 
-        my__val = self.opinions[index]
+        my_val = self.opinions[index]
         influencer_val = (self.model.G.nodes[influencer]["agent"].
             opinions[index])
 
