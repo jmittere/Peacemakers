@@ -9,6 +9,8 @@ import pandas as pd
 import numpy as np
 import scipy
 import matplotlib.pyplot as plt
+import matplotlib.colors as clr
+from matplotlib.cm import get_cmap
 import math
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_samples, silhouette_score
@@ -374,10 +376,10 @@ class bvmModel(Model):
         self.datacollector._new_model_reporter("numAnticlonePairs",
             getNumAnticlonePairs)
 
-        self.datacollector._new_model_reporter("numOneAgreementPairs",
-            getNumAgentPairsWithKAgreementsClosure(1))
-        self.datacollector._new_model_reporter("numTwoAgreementPairs",
-            getNumAgentPairsWithKAgreementsClosure(2))
+        for numAgreements in range(1,self.num_issues):
+            self.datacollector._new_model_reporter(
+                f"num{numAgreements}AgreementPairs",
+                getNumAgentPairsWithKAgreementsClosure(numAgreements))
 
         self.datacollector.collect(self)
 
@@ -425,10 +427,9 @@ if __name__ == "__main__":
     #updateBuckets(test)
     print("Buckets: ", test.buckets)
     print("Number of buckets: ", len(test.buckets)) 
-    for i in test.buckets.items():
-        print("Bucket Label: ", i[0])
-    
-    plotBuckets(test)
+
+    for b,cnt in test.buckets.items():
+        print(f"{len(cnt)} agents in Bucket: {b}")
     '''
     fig, axs = plt.subplots(2, 2)
 
@@ -457,15 +458,18 @@ if __name__ == "__main__":
         ax.label_outer()
     fig.tight_layout()
     '''
-    fig, ax = plt.subplots()
-    ax.plot(df['numClonePairs'], label='clones')
-    ax.plot(df['numAnticlonePairs'], label='anti-clones')
-    ax.plot(df['numOneAgreementPairs'], label='oneAgreements', color='green')
-    ax.plot(df['numTwoAgreementPairs'], label='TwoAgreements', color='red')
+    plt.figure()
+    plt.plot(df['numClonePairs'], label='clones')
+    plt.plot(df['numAnticlonePairs'], label='anti-clones')
+    colors = get_cmap('Greys')
+    for numAgreements in range(1,test.num_issues):
+        plt.plot(df[f'num{numAgreements}AgreementPairs'],
+            label=f'{numAgreements} agreements' if numAgreements > 1 else
+                '1 agreement', color=colors(numAgreements/test.num_issues))
 
-    ax.set_xlabel('Time (steps)')
-    ax.set_ylabel('# clones/anti-clones/1 Agreements/2 Agreements')
-    ax.legend(loc='best')
+    plt.xlabel('Time (steps)')
+    plt.ylabel('# clones/anti-clones/1 Agreements/2 Agreements')
+    plt.legend(loc='best')
     
     ax2 = ax.twinx()
     ax2.plot(df['Buckets'], label='Buckets', color='maroon')
