@@ -357,6 +357,7 @@ class bvmModel(Model):
                 )
 
         self.datacollector._new_model_reporter("Steps", getSteps)
+        self.datacollector._new_model_reporter("Buckets", updateBuckets)
         #self.datacollector._new_model_reporter("assortativity", get_avg_assort)
         #self.datacollector._new_model_reporter("numberOfNonUniformIssues",
         #    numNonUniformIssues)
@@ -379,6 +380,8 @@ class bvmModel(Model):
     def step(self):
         self.influencesLastStep = 0
         self.schedule.step()
+        self.buckets = {} #TODO: fix buckets to persist through steps
+        '''If this line is removed, the buckets do not get overwritten and there will be too many buckets due to the different bucket labels'''
 
         if self.influencesLastStep == 0:
             self.equilibriumCounter += 1
@@ -403,7 +406,7 @@ class bvmModel(Model):
 if __name__ == "__main__":
 
     #lsteps, agents, p, issues, othresh, dthresh
-    test = bvmModel(500, 100, 0.3, 3, 0.1, 0.55)
+    test = bvmModel(1000, 100, 0.3, 3, 0.1, 0.55)
 
     for i in range(test.l_steps):
         test.step()
@@ -414,7 +417,7 @@ if __name__ == "__main__":
     df = test.datacollector.get_model_vars_dataframe()
     df.to_csv("singleRun.csv")
     print(df)
-    updateBuckets(test)
+    #updateBuckets(test)
     print("Buckets: ", test.buckets)
     print("Number of buckets: ", len(test.buckets)) 
     for i in test.buckets.items():
@@ -449,13 +452,17 @@ if __name__ == "__main__":
         ax.label_outer()
     fig.tight_layout()
     '''
-    plt.figure()
-    plt.plot(df['numClonePairs'], label='clones')
-    plt.plot(df['numAnticlonePairs'], label='anti-clones')
-    plt.plot(df['numOneAgreementPairs'], label='oneAgreements', color='green')
-    plt.plot(df['numTwoAgreementPairs'], label='TwoAgreements', color='red')
+    fig, ax = plt.subplots()
+    ax.plot(df['numClonePairs'], label='clones')
+    ax.plot(df['numAnticlonePairs'], label='anti-clones')
+    ax.plot(df['numOneAgreementPairs'], label='oneAgreements', color='green')
+    ax.plot(df['numTwoAgreementPairs'], label='TwoAgreements', color='red')
 
-    plt.xlabel('Time (steps)')
-    plt.ylabel('# clones/anti-clones/1 Agreements/2 Agreements')
-    plt.legend(loc='best')
+    ax.set_xlabel('Time (steps)')
+    ax.set_ylabel('# clones/anti-clones/1 Agreements/2 Agreements')
+    ax.legend(loc='best')
+    
+    ax2 = ax.twinx()
+    ax2.plot(df['Buckets'], label='Buckets', color='maroon')
+    ax2.set_ylabel("Number of Buckets", color='maroon')
     plt.show()
