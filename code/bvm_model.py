@@ -317,7 +317,8 @@ class bvmModel(Model):
         self.clusterTracking = {} #key:(unique_id, issue) 
         self.buckets = {} #key: tuple of mean opinions for the bucket, value: list of agents in that bucket
         self.CI2 = CI2
-
+        if(self.disgust_threshold<=self.openness_threshold):
+            self.running=False
         self.autogmm = AutoGMMCluster(affinity='euclidean', 
                 linkage='ward', covariance_type='full')
 
@@ -338,10 +339,11 @@ class bvmModel(Model):
             self.schedule.add(agent)
 
         # create all the mesa "reporters" to gather stats
+        '''
         reporters =  {"clustersforIssue_{}".format(i):
                 lambda model, issueNum=i:
                 getNumClusters(model,issueNum) for i in range(self.num_issues)}
-
+        '''
         #autoGmmReporters = {"autogmmclustersforIssue_{}".format(i):lambda model, issueNum=i: doAutoGMM(model,issueNum) for i in range(self.num_issues)}
 
         repubs = {"low_iss_{}".format(i):
@@ -353,6 +355,7 @@ class bvmModel(Model):
         mods = {"mod_iss_{}".format(i):
             lambda model, issueNum=i: returnNumModerateOpinions(model,issueNum)
                 for i in range(self.num_issues)}
+        reporters = {} #TODO:take out this line if using reporters above
         reporters.update(repubs)
         reporters.update(dems)
         reporters.update(mods)
@@ -364,12 +367,12 @@ class bvmModel(Model):
                 )
 
         self.datacollector._new_model_reporter("Steps", getSteps)
-        self.datacollector._new_model_reporter("Buckets", updateBuckets)
+        #self.datacollector._new_model_reporter("Buckets", updateBuckets)
         #self.datacollector._new_model_reporter("assortativity", get_avg_assort)
         #self.datacollector._new_model_reporter("numberOfNonUniformIssues",
         #    numNonUniformIssues)
-        self.datacollector._new_model_reporter("persuasions", getPersuasions)
-        self.datacollector._new_model_reporter("repulsions", getRepulsions)
+        #self.datacollector._new_model_reporter("persuasions", getPersuasions)
+        #self.datacollector._new_model_reporter("repulsions", getRepulsions)
 
         self.datacollector._new_model_reporter("numClonePairs",
             getNumClonePairs)
