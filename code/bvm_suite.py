@@ -11,7 +11,7 @@ class bvmSuite():
                 bvmModel, 
                 fixed_parameters = fixedParams,
                 iterations=iters,
-                model_reporters = {'Steps':getSteps,'Anticlones':getNumAnticlonePairs, 'Clones':getNumClonePairs}
+                model_reporters = {'Steps':getSteps,'Anticlones':getNumAnticlonePairs, 'Clones':getNumClonePairs, 'Buckets':updateBuckets}
                 )
         self.data = None
 
@@ -48,8 +48,3 @@ class bvmSuite():
         plt.xlabel('Clones')
         plt.ylabel('Anticlones')
         plt.show()
-        
-        
-
-
-
