@@ -364,7 +364,7 @@ class bvmModel(Model):
                 )
 
         self.datacollector._new_model_reporter("Steps", getSteps)
-        #self.datacollector._new_model_reporter("Buckets", updateBuckets)
+        self.datacollector._new_model_reporter("Buckets", updateBuckets)
         #self.datacollector._new_model_reporter("assortativity", get_avg_assort)
         #self.datacollector._new_model_reporter("numberOfNonUniformIssues",
         #    numNonUniformIssues)
@@ -413,7 +413,7 @@ class bvmModel(Model):
 if __name__ == "__main__":
 
     #lsteps, agents, p, issues, othresh, dthresh, CI2?
-    test = bvmModel(1000, 100, 0.3, 4, 0.15, 0.5, True)
+    test = bvmModel(1000, 100, 0.3, 4, 0.15, 0.5, False)
 
     for i in range(test.l_steps):
         test.step()
@@ -429,7 +429,11 @@ if __name__ == "__main__":
     print("Number of buckets: ", len(test.buckets)) 
 
     for b,cnt in test.buckets.items():
-        print(f"{len(cnt)} agents in Bucket: {b}")
+        x = ()
+        for i in b:
+            num = round(i)
+            x = x + (num,)
+        print("{} agents in Bucket: {}".format(len(cnt), x))
 
     fig, ax = plt.subplots()
     ax.plot(df['numClonePairs'], label='clones')
