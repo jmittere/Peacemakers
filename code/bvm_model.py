@@ -409,46 +409,52 @@ class bvmModel(Model):
             self.running = False
 
         self.steps += 1
+    
+    def printBucketInfo(self):
+        print("Buckets: ", test.buckets)
+        print("Number of buckets: ", len(test.buckets)) 
+        for b,cnt in test.buckets.items():
+            x = ()
+            for i in b:
+                num = round(i)
+                x = x + (num,)
+            print("{} agents in Bucket: {}".format(len(cnt), x))
+    
+    def plotAgreementCensus(self):
+        df = self.datacollector.get_model_vars_dataframe()
+        fig, ax = plt.subplots()
+        ax.plot(df['numClonePairs'], label='clones')
+        ax.plot(df['numAnticlonePairs'], label='anti-clones')
+        colors = get_cmap('Greys')
+        for numAgreements in range(1,self.num_issues):
+            ax.plot(df[f'num{numAgreements}AgreementPairs'],
+                label=f'{numAgreements} agreements' if numAgreements > 1 else
+                    '1 agreement', color=colors(numAgreements/self.num_issues))
+
+        ax.set_xlabel('Time (steps)')
+        ax.set_ylabel('# clones/anti-clones/1 Agreements/2 Agreements')
+        ax.legend(loc='best')
+    
+        ax2 = ax.twinx()
+        ax2.plot(df['Buckets'], label='Buckets', color='maroon')
+        ax2.set_ylabel("Number of Buckets", color='maroon')
+        ax2.axhline(y=0, linestyle = 'dotted')
+        plt.annotate("Number of Buckets", xy=(10,30))
+        plt.show()
 
 if __name__ == "__main__":
 
     #lsteps, agents, p, issues, othresh, dthresh, CI2?
-    test = bvmModel(1000, 100, 0.3, 4, 0.15, 0.5, False)
+    test = bvmModel(1000, 100, 0.3, 5, 0.05, .75, True)
 
     for i in range(test.l_steps):
         test.step()
         if(test.running == False):
             break
     
-    #printAllAgentOpinions(test)
     df = test.datacollector.get_model_vars_dataframe()
     df.to_csv("singleRun.csv")
     print(df)
-    #updateBuckets(test)
-    print("Buckets: ", test.buckets)
-    print("Number of buckets: ", len(test.buckets)) 
 
-    for b,cnt in test.buckets.items():
-        x = ()
-        for i in b:
-            num = round(i)
-            x = x + (num,)
-        print("{} agents in Bucket: {}".format(len(cnt), x))
-
-    fig, ax = plt.subplots()
-    ax.plot(df['numClonePairs'], label='clones')
-    ax.plot(df['numAnticlonePairs'], label='anti-clones')
-    colors = get_cmap('Greys')
-    for numAgreements in range(1,test.num_issues):
-        ax.plot(df[f'num{numAgreements}AgreementPairs'],
-            label=f'{numAgreements} agreements' if numAgreements > 1 else
-                '1 agreement', color=colors(numAgreements/test.num_issues))
-
-    ax.set_xlabel('Time (steps)')
-    ax.set_ylabel('# clones/anti-clones/1 Agreements/2 Agreements')
-    ax.legend(loc='best')
-    
-    ax2 = ax.twinx()
-    ax2.plot(df['Buckets'], label='Buckets', color='maroon')
-    ax2.set_ylabel("Number of Buckets", color='maroon')
-    plt.show()
+    test.printBucketInfo()
+    test.plotAgreementCensus()
