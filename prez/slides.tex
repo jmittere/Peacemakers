@@ -39,10 +39,9 @@ Fredericksburg, Virginia, USA\\
 \centering
 ``America is becoming increasingly polarized..."
 
-% TODO: get JAn 6th photo
 \vspace{-.2in}
 \begin{figure}
-\includegraphics[width=0.35\textwidth]{usa.png}
+\includegraphics[width=0.50\textwidth]{images/capitol.png}
 \end{figure}
 \pause
 \vspace{-.2in}
@@ -69,6 +68,14 @@ What does this actually mean?
 % explain why we think this is a measure of polarization
 
 % "echo chambers"
+
+
+\begin{figure}
+	\includegraphics[width=0.40\textwidth]{images/HighAssortDiagram.png}
+	\hfill
+	\includegraphics[width=0.40\textwidth]{images/LowAssortDiagram.png}
+	%TODO: add captions for high and low assort
+\end{figure}
 
 \end{frame}
 
@@ -99,31 +106,71 @@ Stephen TODO:
 % ER edge prob is a parameter
 
 % Multiple continuous opinions 
+\large
+
+\centering
+Opinion Dynamics ABM
+
+\vspace{.05in}
+Model Characteristics:
+\vspace{-.15in}
+
+\small
+\begin{itemize}
+\itemsep.1em
+\item \textit{N} heterogenous agents who encounter each other on a social network.
+\item \textit{Edge Probability} of a random Erd\"{o}s-R\'{e}nyi graph which controls network density
+\item Agents have multiple opinions that exist on a continuum
+\item \textit{Openness Threshold} and \textit{Disgust Threshold} that control the degree of agent opinion influence
+\end{itemize}
+
 
 \end{frame}
 
 
-\begin{frame}[c]{Traditional BC}  % Justin
+\begin{frame}[c]{Traditional BC with Positive Influence}  % Justin
 
 % Here is traditional bounded confidence (BC) from Hegelsmen-Krause
 
 % Show one number line and two peeps
+\begin{figure}
+	\includegraphics[width=0.65\textwidth]{images/BCNoInfluence.png}
+	\hfill
+	\includegraphics[width=0.65\textwidth]{images/BCPositiveInfluence.png}
+	%TODO: add captions
+\end{figure}
+
 
 \end{frame}
 
+\begin{frame}[c]{Traditional BC with Negative Influence}  % Justin
 
-\begin{frame}[c]{CI2 - attraction only}  % Justin
+% Here is traditional bounded confidence (BC) from Hegelsmen-Krause with repulsion
 
+\begin{figure}
+	\includegraphics[width=0.65\textwidth]{images/BCNegativeInfluence.png}
+	%TODO: add captions
+\end{figure}
+
+
+\end{frame}
+
+\begin{frame}[c]{Cross-Issue Influence (Positive only)}  % Justin
+
+% Show two number line and two peeps, with an attraction due to openness
 We define \textbf{Cross-Issue Influence} (CI2) as the effect that a person's
 social contact can have on one of their opinions based on their agreement (or
 disagreement) on a different issue.
 
-% Show two number line and two peeps, with an attraction due to openness
+\begin{figure}
+	\includegraphics[width=0.75\textwidth]{images/CI2Attraction.png}
+	%TODO: add captions
+\end{figure}
 
 \end{frame}
 
 
-\begin{frame}[c]{CI2 - add repulsion}  % Justin
+\begin{frame}[c]{Cross-Issue Influence (adding Negative)}  % Justin
 
 % Show two number line and two peeps, with a repulsion due to disgust
 
@@ -131,6 +178,10 @@ disagreement) on a different issue.
 
 % And cite Griffin, Em (2011). A First Look at Communication Theory. New York,
 % New York: McGraw Hill. pp. 194–204.
+\begin{figure}
+	\includegraphics[width=0.75\textwidth]{images/CI2Repulsion.png}
+	%TODO: add captions
+\end{figure}
 
 \end{frame}
 
