@@ -32,17 +32,12 @@ def cleanData(data):
 
 #suite = bvmSuite({"p":.3, "o":.20, "d":.50,"issues":3, "l_steps":1000, "n_agents":50, 'CI2':True}, 25)
 
-sweep = bvmSweep({"p":.3,"issues":3, "l_steps":1000, "n_agents":100, 'CI2':True},{"d":np.arange(0.4,.95,0.05), "o":np.arange(0.05,.45,0.05)}, 3)
+sweep = bvmSweep({"issues":3, "l_steps":1000, "n_agents":100, 'CI2':True, 'd':.7, 'o':0.4},{"p":np.arange(0.05,1,0.05)}, 10)
 
 #sweep.run()
 #data = sweep.getData()
 
-#data.to_csv('CI2SweepData.csv')
-data = pd.read_csv('CI2SweepData.csv')
+#data.to_csv('AssortEdgeData.csv')
+data = pd.read_csv('AssortEdgeData.csv')
 print(data)
-cleanData(data)
-sweep.plotBucketHeatmap("Cross Issue Influence", 'CleanedCI2Data.csv')
-
-
-
-
+sweep.plotScatter("Assortativity and Edge Probability with o=.4 and d=.70",'AssortEdgeData.csv')

@@ -112,11 +112,12 @@ def get_avg_assort(model):
             try:
                 assort = nx.numeric_assortativity_coefficient(model.G,
                     "iss_{}".format(i))
+
                 assorts.append(assort)
             except RuntimeWarning:
                 print("Runtime Warning...")
-                raise
-
+                printAllAgentOpinions(model)
+                return 0
     return (sum(assorts) / len(assorts))
 
 def getAllOpinions(model, issueNum):

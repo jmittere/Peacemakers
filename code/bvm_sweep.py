@@ -9,7 +9,7 @@ class bvmSweep():
                 fixed_parameters = fixedParams,
                 variable_parameters = variableParams,
                 iterations=iters,
-                model_reporters = {'Buckets':updateBuckets}
+                model_reporters = {'avg_assort':get_avg_assort}
                 )
         self.iterations = iters
 
@@ -36,5 +36,19 @@ class bvmSweep():
         plt.yticks(np.arange(0.05, 1, 0.1))
         colorBar = plt.colorbar()
         colorBar.set_label('Avg Number of Buckets for Each Suite')
+        plt.show()
+    
+    def plotScatter(self, title, filename=None): 
+        if filename!=None:
+            data = pd.read_csv(filename)
+        else:
+            data = self.data
+
+        plt.figure()
+        plt.title(title)
+        plt.scatter(x=data['p'], y=data['avg_assort'], alpha=.7)
+        plt.xticks(np.arange(0.0,1.1,0.1))
+        plt.xlabel('Number of Meaningful Social Connections')
+        plt.ylabel('Average Assortativity Across All Issues')
         plt.show()
 
