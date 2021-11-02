@@ -32,12 +32,12 @@ def cleanData(data):
 
 #suite = bvmSuite({"p":.3, "o":.20, "d":.50,"issues":3, "l_steps":1000, "n_agents":50, 'CI2':True}, 25)
 
-sweep = bvmSweep({"issues":3, "l_steps":1000, "n_agents":100, 'CI2':True, 'd':.7, 'o':0.4},{"p":np.arange(0.05,1,0.05)}, 10)
+sweep = bvmSweep({"issues":3, "l_steps":1000, "n_agents":500, 'CI2':True, 'd':1, 'o':0.1},{"p":np.arange(0.05,1,0.05)}, 10)
 
-#sweep.run()
-#data = sweep.getData()
+sweep.run()
+data = sweep.getData()
 
-#data.to_csv('AssortEdgeData.csv')
-data = pd.read_csv('AssortEdgeData.csv')
+data.to_csv('MoreagentsAssortEdgeData.csv')
+data = pd.read_csv('MoreagentsAssortEdgeData.csv')
 print(data)
-sweep.plotScatter("Assortativity and Edge Probability with o=.4 and d=.70",'AssortEdgeData.csv')
+sweep.plotScatter("Assortativity and Edge Probability with o=.1 and d=.1",'MoreagentsAssortEdgeData.csv')
