@@ -1,5 +1,6 @@
 \documentclass[12pt]{beamer}
 \usepackage{mathtools}
+\usepackage{makecell}
 \useoutertheme{infolines}
 \usetheme{default}
 \usefonttheme{serif}
@@ -61,7 +62,7 @@ What does this actually mean?
 
 \end{frame}
 
-\begin{frame}[c]{Proxy \#1: Assortativity coefficient} % Justin
+\begin{frame}[c]{Polarization Proxy \#1: Assortativity coefficient} % Justin
 
 % TODO: add slides from extravaganza, and explain assortativity well
 
@@ -80,20 +81,37 @@ What does this actually mean?
 \end{frame}
 
 
-\begin{frame}[c]{Proxy \#2: Issue Alignment} % Stephen
+\begin{frame}[c]{Polarization Proxy \#2: Issue Alignment} % Stephen
 
 We define \textbf{Issue Alignment} (IA) as the tendency for people who agree on
 one issue to also agree on other (unrelated) issues.
 
-{\tiny \color{red} 
-Stephen TODO:
+\begin{center}
+\begin{tabular}{c|c}
+\pause
+raise the minimum wage & lower the minimum wage \\
+\pause
+pro-choice & pro-life \\
+\pause
+higher taxes \& services & lower taxes \& services \\
+\pause
+anti-guns & pro-guns \\
+\pause
+pro-immigration & anti-immigration \\
+\pause
+pro-vaccine-mandate & anti-vaccine-mandate \\
+\pause
+pro-renewable-energy & pro-fossil-fuels \\
+\pause
+... & ... \\
+\end{tabular}
+\end{center}
 
-\begin{itemize}
-\itemsep.1em
-\item Illustrative list of typical left vs. right positions
-\item Ask: in your experience, does this hold true?
-\end{itemize}
-}
+\pause
+\footnotesize
+
+If people generally adhere to an entire suite of opinions, we term that society
+``Issue Aligned'' and claim this is an indication of polarization.
 
 \end{frame}
 
@@ -120,7 +138,7 @@ Model Characteristics:
 \itemsep.1em
 \item \textit{N} heterogenous agents who encounter each other on a social network.
 \item \textit{Edge Probability} of a random Erd\"{o}s-R\'{e}nyi graph which controls network density
-\item Agents have multiple opinions that exist on a continuum
+\item Agents have opinions on multiple issues, each of which is on a continuum
 \item \textit{Openness Threshold} and \textit{Disgust Threshold} that control the degree of agent opinion influence
 \end{itemize}
 
@@ -130,7 +148,8 @@ Model Characteristics:
 
 \begin{frame}[c]{Traditional BC with Positive Influence}  % Justin
 
-% Here is traditional bounded confidence (BC) from Hegelsmen-Krause
+% Here is traditional bounded confidence (BC) from Hegelsmen-Krause and
+% Deffuant et al
 
 % Show one number line and two peeps
 \begin{figure}
@@ -145,7 +164,7 @@ Model Characteristics:
 
 \begin{frame}[c]{Traditional BC with Negative Influence}  % Justin
 
-% Here is traditional bounded confidence (BC) from Hegelsmen-Krause with repulsion
+% Here is traditional bounded confidence (BC) from Hegelsmen-Krause/Deffuant with repulsion
 
 \begin{figure}
 	\includegraphics[width=0.65\textwidth]{images/BCNegativeInfluence.png}
@@ -213,83 +232,205 @@ openness threshold surprisingly does not seem to impact assortativity.
 
 \end{frame}
 
-\begin{frame}[c]{Proxy \#2: Issue Alignment} % Stephen
+\begin{frame}[c]{Issue Alignment (IA)} % Stephen
 
-Reminder: define \textbf{Issue Alignment} (IA) as the tendency for people who agree on
-one issue to also agree on other (unrelated) issues.
+%\textbf{Issue Alignment} (IA): the tendency for people who agree on one issue
+%to also agree on other (unrelated) issues.
 
-{\tiny \color{red} 
-Stephen TODO:
+\textit{Why} does IA occur?
 
-\begin{itemize}
-\itemsep.1em
-\item Illustrative list of typical left vs. right positions
-\item Ask: in your experience, does this hold true?
-\end{itemize}
+Possible explanation \#1: perhaps there is some deep underlying
+principle to people's ideologies that connects seemingly unconnected issues.
+\pause
+
+\begin{center}
+\begin{tabular}{clp{1cm}rc}
+\makecell{
+\\
+\includegraphics[width=0.15\textwidth]{thinker1.jpg}
+} &
+\makecell{
+Ideology 1 $\Rightarrow$ \\
+Opinion A \\
+Opinion B \\
+Opinion C \\} & &
+\makecell{
+Ideology 2 $\Rightarrow$ \\
+Opinion D \\
+Opinion E \\
+Opinion F \\} &
+\makecell{
+\\
+\includegraphics[width=0.1\textwidth]{thinker2.jpg}
 }
+\end{tabular}
+\end{center}
 
 \end{frame}
-\begin{frame}[c]{One possible explanation for IA} % Stephen
 
-{\tiny \color{red} 
-Stephen TODO:
+\begin{frame}[c]{Issue Alignment (IA)} % Stephen
 
-Perhaps there is some deep underlying principle to people's ideologies that
-connects seemingly unconnected issues. (Maybe for some deep reason it actually
-makes sense that people who are pro-life are also pro-gun, and anti-tax, and
-anti-vacc.)
+\textit{Why} does IA occur?
+
+Possible explanation \#2: perhaps a small number of popular media
+outlets each articulates a set of opinions on various issues. 
+
+\pause
+\begin{center}
+\begin{tabular}{clp{1cm}rc}
+\makecell{
+\\
+\includegraphics[width=0.15\textwidth]{listener1.jpg}
+} &
+\makecell{
+News source 1:  \\
+``Opinion A!'' \\
+``Opinion B!'' \\
+``Opinion C!'' \\} & &
+\makecell{
+News source 2:  \\
+``Opinion D!'' \\
+``Opinion E!'' \\
+``Opinion F!'' \\} & 
+\makecell{
+\\
+\includegraphics[width=0.15\textwidth]{listener2.jpg}
 }
+\end{tabular}
+\end{center}
 
-\end{frame}
-
-\begin{frame}[c]{Another possible explanation for IA} % Stephen
-
-{\tiny \color{red} 
-Stephen TODO:
-
-Perhaps a small number of popular media outlets each articulates a number of
-opinions on various issues. The people who listen to them are naturally
-influenced to each of these different opinion values, and thus become ``issue
-aligned."
-}
+%The people who
+%listen to them are naturally influenced to each of these different opinion
+%values, and thus become ``issue aligned."
 
 \end{frame}
 
 \begin{frame}[c]{A third possible explanation for IA} % Stephen
 
-CI2!
+\large
+Our model demonstrates that neither ideological coherence nor media influence
+is necessary for IA to develop. \textbf{Cross-issue influence} (CI2) is
+sufficient.
 
-{\tiny \color{red} 
-Stephen TODO:
+\pause
+\normalsize
+\bigskip
 
-We wish there was more justification in the social psych lit for this, but we
-have to fall back on (1) homophily and (2) common sense.
-}
-
-{\small \color{red} 
-Big idea: even without any underlying ideological connection between issues,
-and even without media influence, IA will naturally develop solely due to CI2.
-In other words, CI2 is sufficient for IA. (Wide reaching implications on how we
-interpret the causes of the polarization phenomenon, and what societal changes
-might be necessary to reduce it.)
-}
+This may have wide-reaching implications on how we interpret the causes of the
+polarization phenomenon, and what societal changes might be necessary to reduce
+it.
 
 \end{frame}
 
-\begin{frame}[c]{IA example} % Stephen
+\begin{frame}[c]{Quantifying IA} % Stephen
+
+To measure the degree of Issue Alignment in a virtual society, we measure the
+number of distinct opinion \textbf{buckets} that exist.
+
+\bigskip
+\pause
+A ``bucket'' is a specific set of numerical opinions on the various issues.
+
+At any point in simulated time, each agent is in one bucket, possibly with
+other agents.
+
+\textit{All agents in the same bucket agree on all the issues}, within a
+threshold of $\varepsilon$ (.05).
 
 \end{frame}
 
 
-\begin{frame}[c]{Define "buckets"} % Stephen
+\begin{frame}[c]{Example} % Stephen
 
+\begin{center}
+\begin{tabular}{cp{1cm}c}
+\makecell{
+\small Agent $\alpha$: \\
+\footnotesize Opinion on issue 1: \textbf{1.0} \\
+\footnotesize Opinion on issue 2: \textbf{0.5} \\
+\footnotesize Opinion on issue 3: \textbf{0.0} \\
+} & &
+\makecell{
+\small Agent $\beta$: \\
+\footnotesize Opinion on issue 1: \textbf{1.0} \\
+\footnotesize Opinion on issue 2: \textbf{1.0} \\
+\footnotesize Opinion on issue 3: \textbf{1.0} \\
+} \\
+\smallskip \\
+\makecell{
+\small Agent $\gamma$: \\
+\footnotesize Opinion on issue 1: \textbf{0.6} \\
+\footnotesize Opinion on issue 2: \textbf{0.0} \\
+\footnotesize Opinion on issue 3: \textbf{0.2} \\
+} & &
+\makecell{
+\small Agent $\delta$: \\
+\footnotesize Opinion on issue 1: \textbf{1.0} \\
+\footnotesize Opinion on issue 2: \textbf{0.5} \\
+\footnotesize Opinion on issue 3: \textbf{0.0} \\
+} \\
+\end{tabular}
+
+\bigskip
+\bigskip
+\smallskip
+\phantom{In this model, there are \textbf{three} buckets: one with agents
+$\alpha$ and $\delta$, one with agent $\beta$ only, and one with agent $\gamma$
+only.}
+\end{center}
+\end{frame}
+
+\begin{frame}[c]{Example} % Stephen
+
+\begin{center}
+\begin{tabular}{cp{1cm}c}
+\makecell{
+\color{darkgreen} \small Agent $\alpha$: \\
+\color{darkgreen} \footnotesize Opinion on issue 1: \textbf{1.0} \\
+\color{darkgreen} \footnotesize Opinion on issue 2: \textbf{0.5} \\
+\color{darkgreen} \footnotesize Opinion on issue 3: \textbf{0.0} \\
+} & &
+\makecell{
+\color{red} \small Agent $\beta$: \\
+\color{red} \footnotesize Opinion on issue 1: \textbf{1.0} \\
+\color{red} \footnotesize Opinion on issue 2: \textbf{1.0} \\
+\color{red} \footnotesize Opinion on issue 3: \textbf{1.0} \\
+} \\
+\smallskip \\
+\makecell{
+\color{blue} \small Agent $\gamma$: \\
+\color{blue} \footnotesize Opinion on issue 1: \textbf{0.6} \\
+\color{blue} \footnotesize Opinion on issue 2: \textbf{0.0} \\
+\color{blue} \footnotesize Opinion on issue 3: \textbf{0.2} \\
+} & &
+\makecell{
+\color{darkgreen} \small Agent $\delta$: \\
+\color{darkgreen} \footnotesize Opinion on issue 1: \textbf{1.0} \\
+\color{darkgreen} \footnotesize Opinion on issue 2: \textbf{0.5} \\
+\color{darkgreen} \footnotesize Opinion on issue 3: \textbf{0.0} \\
+} \\
+\end{tabular}
+
+\bigskip
+{In this model, there are \textbf{three} buckets: one with agents
+$\alpha$ and $\delta$, one with agent $\beta$ only, and one with agent $\gamma$
+only.}
+\end{center}
 \end{frame}
 
 
-\begin{frame}[c]{Define "clone pair" / anti-clone pair} % Stephen
+\begin{frame}[c]{One other bit of lingo} % Stephen
+
+\Large
+If a pair of agents agrees on \textit{every} issue (\textit{i.e.}, they're in
+the same bucket), we call them \textbf{clones} (or a ``clone pair.'')
+
+\bigskip
+
+If a pair of agents \underline{dis}agrees on every issue, we call them
+\textbf{anti-clones} (or an ``anti-clone pair.'')
 
 \end{frame}
-
 
 
 \begin{frame}[c]{Census plot w/o CI2} % Stephen
