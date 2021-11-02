@@ -72,14 +72,103 @@ What does this actually mean?
 
 
 \begin{figure}
+
 	\includegraphics[width=0.40\textwidth]{images/HighAssortDiagram.png}
 	\hfill
 	\includegraphics[width=0.40\textwidth]{images/LowAssortDiagram.png}
 	%TODO: add captions for high and low assort
+    % possibly add initial sentence describing assorativity concisely
 \end{figure}
 
 \end{frame}
 
+
+
+\begin{frame}[c]{The model}  % Justin
+
+% Describe in selected detail the model
+
+% N heterogeneous agents who encounter each other on a social network.
+
+% ER edge prob is a parameter
+
+% Multiple continuous opinions 
+\large
+
+\centering
+Opinion Dynamics ABM
+
+\vspace{.05in}
+Model Characteristics:
+\vspace{-.15in}
+
+\small
+\begin{itemize}
+\itemsep.1em
+\item \textit{N} heterogenous agents who encounter each other on a social network.
+\item \textbf{Edge Probability} of a random Erd\"{o}s-R\'{e}nyi graph which controls network density
+\item Agents have opinions on multiple issues, each of which is on a continuum
+\item \textbf{Openness Threshold} and \textbf{Disgust Threshold} that control the degree of agent opinion influence
+\end{itemize}
+
+
+\end{frame}
+
+
+\begin{frame}[c]{\normalsize Traditional Bounded Confidence (Positive Influence)}  % Justin
+
+% Here is traditional bounded confidence (BC) from Hegelsmen-Krause and
+% Deffuant et al
+
+% Show one number line and two peeps
+\begin{figure}
+	\includegraphics[width=0.65\textwidth]{images/BCNoInfluence.png}
+	\hfill
+	\includegraphics[width=0.65\textwidth]{images/BCPositiveInfluence.png}
+	%TODO: add captions
+\end{figure}
+
+
+\end{frame}
+
+\begin{frame}[c]{\normalsize Traditional Bounded Confidence (Negative Influence)}  % Justin
+
+% Here is traditional bounded confidence (BC) from Hegelsmen-Krause/Deffuant with repulsion
+
+\begin{figure}
+	\includegraphics[width=0.65\textwidth]{images/BCNegativeInfluence.png}
+	%TODO: add captions
+\end{figure}
+
+
+\end{frame}
+
+
+\begin{frame}[c]{Results: Assortativity and Network Density}  % Justin
+
+\begin{figure}
+	\includegraphics[width=0.9\textwidth]{images/Assort_edge.png}
+	%TODO: add captions
+	%TODO: This is the graph on the paper, do we want meaningful social connections instead? N*edgeprob
+
+\end{figure}
+
+\vspace{-.3in}
+\small
+Fewer (meaningful) social connections = higher polarization BUT only at the low end.
+
+\end{frame}
+
+\begin{frame}[c]{Fig 2 explained}  % Justin
+
+%TODO: Justin verify
+%(Just for completeness, rerun paper graph Figure 2 with a much lower value of
+%edge prob (how about .05 instead of .5, for instance.) Then we’ll verify the
+%null hypothesis that “openness does not impact assortativity.”)
+
+openness threshold surprisingly does not seem to impact assortativity.
+
+\end{frame}
 
 \begin{frame}[c]{Polarization Proxy \#2: Issue Alignment} % Stephen
 
@@ -114,124 +203,6 @@ If people generally adhere to an entire suite of opinions, we term that society
 ``Issue Aligned'' and claim this is an indication of polarization.
 
 \end{frame}
-
-\begin{frame}[c]{The model}  % Justin
-
-% Describe in selected detail the model
-
-% N heterogeneous agents who encounter each other on a social network.
-
-% ER edge prob is a parameter
-
-% Multiple continuous opinions 
-\large
-
-\centering
-Opinion Dynamics ABM
-
-\vspace{.05in}
-Model Characteristics:
-\vspace{-.15in}
-
-\small
-\begin{itemize}
-\itemsep.1em
-\item \textit{N} heterogenous agents who encounter each other on a social network.
-\item \textit{Edge Probability} of a random Erd\"{o}s-R\'{e}nyi graph which controls network density
-\item Agents have opinions on multiple issues, each of which is on a continuum
-\item \textit{Openness Threshold} and \textit{Disgust Threshold} that control the degree of agent opinion influence
-\end{itemize}
-
-
-\end{frame}
-
-
-\begin{frame}[c]{Traditional BC with Positive Influence}  % Justin
-
-% Here is traditional bounded confidence (BC) from Hegelsmen-Krause and
-% Deffuant et al
-
-% Show one number line and two peeps
-\begin{figure}
-	\includegraphics[width=0.65\textwidth]{images/BCNoInfluence.png}
-	\hfill
-	\includegraphics[width=0.65\textwidth]{images/BCPositiveInfluence.png}
-	%TODO: add captions
-\end{figure}
-
-
-\end{frame}
-
-\begin{frame}[c]{Traditional BC with Negative Influence}  % Justin
-
-% Here is traditional bounded confidence (BC) from Hegelsmen-Krause/Deffuant with repulsion
-
-\begin{figure}
-	\includegraphics[width=0.65\textwidth]{images/BCNegativeInfluence.png}
-	%TODO: add captions
-\end{figure}
-
-
-\end{frame}
-
-\begin{frame}[c]{Cross-Issue Influence (Positive only)}  % Justin
-
-% Show two number line and two peeps, with an attraction due to openness
-We define \textbf{Cross-Issue Influence} (CI2) as the effect that a person's
-social contact can have on one of their opinions based on their agreement (or
-disagreement) on a different issue.
-
-\begin{figure}
-	\includegraphics[width=0.75\textwidth]{images/CI2Attraction.png}
-	%TODO: add captions
-\end{figure}
-
-\end{frame}
-
-
-\begin{frame}[c]{Cross-Issue Influence (adding Negative)}  % Justin
-
-% Show two number line and two peeps, with a repulsion due to disgust
-
-% Also show the Justin threshold diagram with red & green regions
-
-% And cite Griffin, Em (2011). A First Look at Communication Theory. New York,
-% New York: McGraw Hill. pp. 194–204.
-\begin{figure}
-	\includegraphics[width=0.75\textwidth]{images/CI2Repulsion.png}
-	%TODO: add captions
-\end{figure}
-
-\end{frame}
-
-\begin{frame}[c]{Assortativity and Network Density}  % Justin
-
-\begin{figure}
-	\includegraphics[width=0.75\textwidth]{images/Assort_edge.png}
-	%TODO: add captions
-	%TODO: This is the graph on the paper, do we want meaningful social connections instead? N*edgeprob
-
-\end{figure}
-
-\small
-\begin{itemize}
-\itemsep.1em
-\item Fewer (meaningful) social connections = higher polarization BUT only at the low end.
-\end{itemize}
-
-\end{frame}
-
-\begin{frame}[c]{Fig 2 explained}  % Justin
-
-%TODO: Justin verify
-%(Just for completeness, rerun paper graph Figure 2 with a much lower value of
-%edge prob (how about .05 instead of .5, for instance.) Then we’ll verify the
-%null hypothesis that “openness does not impact assortativity.”)
-
-openness threshold surprisingly does not seem to impact assortativity.
-
-\end{frame}
-
 \begin{frame}[c]{Issue Alignment (IA)} % Stephen
 
 %\textbf{Issue Alignment} (IA): the tendency for people who agree on one issue
@@ -322,6 +293,35 @@ it.
 
 \end{frame}
 
+\begin{frame}[c]{Cross-Issue Influence (Positive)}  % Justin
+
+% Show two number line and two peeps, with an attraction due to openness
+We define \textbf{Cross-Issue Influence} (CI2) as the effect that a person's
+social contact can have on one of their opinions based on their agreement (or
+disagreement) on a different issue.
+
+\begin{figure}
+	\includegraphics[width=0.75\textwidth]{images/CI2Attraction.png}
+	%TODO: add captions
+\end{figure}
+
+\end{frame}
+
+
+\begin{frame}[c]{Cross-Issue Influence (Negative)}  % Justin
+
+% Show two number line and two peeps, with a repulsion due to disgust
+
+% Also show the Justin threshold diagram with red & green regions
+
+% And cite Griffin, Em (2011). A First Look at Communication Theory. New York,
+% New York: McGraw Hill. pp. 194–204.
+\begin{figure}
+	\includegraphics[width=0.75\textwidth]{images/CI2Repulsion.png}
+	%TODO: add captions
+\end{figure}
+
+\end{frame}
 \begin{frame}[c]{Quantifying IA} % Stephen
 
 To measure the degree of Issue Alignment in a virtual society, we measure the
@@ -435,9 +435,25 @@ If a pair of agents \underline{dis}agrees on every issue, we call them
 
 \begin{frame}[c]{Census plot w/o CI2} % Stephen
 
+\begin{center}
+\includegraphics[width=0.9\textwidth]{census3issuesI2.png}
+\end{center}
+
 \end{frame}
 
 \begin{frame}[c]{Census plot w/ CI2} % Stephen
+
+\begin{center}
+\includegraphics[width=0.9\textwidth]{census3issuesCI2.png}
+\end{center}
+
+\end{frame}
+
+\begin{frame}[c]{Census plot w/ CI2} % Stephen
+
+\begin{center}
+\includegraphics[width=0.9\textwidth]{census10issuesCI2.png}
+\end{center}
 
 \end{frame}
 
@@ -485,3 +501,10 @@ Fredericksburg, Virginia, USA\\
 
 \end{frame}
 \end{document}
+
+
+% Point #1 (in this prez): CI2 results in fewer buckets (histogram showing # of
+% buckets for both I2 and CI2)
+% Point #2 (for later): interplay between openness and disgust (heatmap showing 
+% openness vs disgust vs # of buckets. Probably don't need to show both I2 and
+% CI2 heatmaps because they tell the same story.)
