@@ -368,7 +368,7 @@ class bvmModel(Model):
                 )
 
         self.datacollector._new_model_reporter("Steps", getSteps)
-        #self.datacollector._new_model_reporter("Buckets", updateBuckets)
+        self.datacollector._new_model_reporter("Buckets", updateBuckets)
         #self.datacollector._new_model_reporter("assortativity", get_avg_assort)
         #self.datacollector._new_model_reporter("numberOfNonUniformIssues",
         #    numNonUniformIssues)
@@ -443,13 +443,13 @@ class bvmModel(Model):
         ax2.plot(df['Buckets'], label='Buckets', color='maroon')
         ax2.set_ylabel("Number of Buckets", color='maroon')
         ax2.axhline(y=0, linestyle = 'dotted')
-        plt.annotate("Number of Buckets", xy=(10,30))
+        plt.annotate("Buckets: {}".format(len(self.buckets)), xy=(self.steps-50,len(self.buckets)), fontsize='medium', fontweight='heavy', fontvariant='small-caps', fontstyle='italic')
         plt.show()
 
 if __name__ == "__main__":
 
     #lsteps, agents, p, issues, othresh, dthresh, CI2?
-    test = bvmModel(1000, 100, 0.3, 5, 0.05, .75, True)
+    test = bvmModel(1000, 100, 0.3, 3, 0.10, .60, True)
 
     for i in range(test.l_steps):
         test.step()
