@@ -440,16 +440,17 @@ class bvmModel(Model):
         ax.legend(loc='best')
     
         ax2 = ax.twinx()
-        ax2.plot(df['Buckets'], label='Buckets', color='maroon')
+        ax2.plot(df['Buckets'], label='Buckets', color='maroon',
+            linestyle="dashed")
         ax2.set_ylabel("Number of Buckets", color='maroon')
         ax2.axhline(y=0, linestyle = 'dotted')
-        plt.annotate("Buckets: {}".format(len(self.buckets)), xy=(self.steps-50,len(self.buckets)), fontsize='medium', fontweight='heavy', fontvariant='small-caps', fontstyle='italic')
+        plt.annotate("Buckets: {}".format(len(self.buckets)), xy=(.9*self.steps,len(self.buckets)), fontsize='medium', fontweight='heavy', fontvariant='small-caps', fontstyle='italic')
         plt.show()
 
 if __name__ == "__main__":
 
     #lsteps, agents, p, issues, othresh, dthresh, CI2?
-    test = bvmModel(1000, 100, 0.3, 3, 0.10, .60, True)
+    test = bvmModel(1000, 100, 0.3, 10, 0.10, .60, True)
 
     for i in range(test.l_steps):
         test.step()
