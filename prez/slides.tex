@@ -297,39 +297,130 @@ News source 2:  \\
 
 \begin{frame}[c]{A third possible explanation for IA} % Stephen
 
-CI2!
+\large
+Our model demonstrates that neither ideological coherence nor media influence
+is necessary for IA to develop. \textbf{Cross-issue influence} (CI2) is
+sufficient.
 
-{\tiny \color{red} 
-Stephen TODO:
+\pause
+\normalsize
+\bigskip
 
-We wish there was more justification in the social psych lit for this, but we
-have to fall back on (1) homophily and (2) common sense.
-}
-
-{\small \color{red} 
-Big idea: even without any underlying ideological connection between issues,
-and even without media influence, IA will naturally develop solely due to CI2.
-In other words, CI2 is sufficient for IA. (Wide reaching implications on how we
-interpret the causes of the polarization phenomenon, and what societal changes
-might be necessary to reduce it.)
-}
+This may have wide-reaching implications on how we interpret the causes of the
+polarization phenomenon, and what societal changes might be necessary to reduce
+it.
 
 \end{frame}
 
-\begin{frame}[c]{IA example} % Stephen
+\begin{frame}[c]{Quantifying IA} % Stephen
+
+To measure the degree of Issue Alignment in a virtual society, we measure the
+number of distinct opinion \textbf{buckets} that exist.
+
+\bigskip
+\pause
+A ``bucket'' is a specific set of numerical opinions on the various issues.
+
+At any point in simulated time, each agent is in one bucket, possibly with
+other agents.
+
+\textit{All agents in the same bucket agree on all the issues}, within a
+threshold of $\varepsilon$ (.05).
 
 \end{frame}
 
 
-\begin{frame}[c]{Define "buckets"} % Stephen
+\begin{frame}[c]{Example} % Stephen
 
+\begin{center}
+\begin{tabular}{cp{1cm}c}
+\makecell{
+\small Agent $\alpha$: \\
+\footnotesize Opinion on issue 1: \textbf{0.0} \\
+\footnotesize Opinion on issue 2: \textbf{0.5} \\
+\footnotesize Opinion on issue 3: \textbf{0.0} \\
+} & &
+\makecell{
+\small Agent $\beta$: \\
+\footnotesize Opinion on issue 1: \textbf{1.0} \\
+\footnotesize Opinion on issue 2: \textbf{1.0} \\
+\footnotesize Opinion on issue 3: \textbf{1.0} \\
+} \\
+\smallskip \\
+\makecell{
+\small Agent $\gamma$: \\
+\footnotesize Opinion on issue 1: \textbf{0.6} \\
+\footnotesize Opinion on issue 2: \textbf{0.0} \\
+\footnotesize Opinion on issue 3: \textbf{0.2} \\
+} & &
+\makecell{
+\small Agent $\delta$: \\
+\footnotesize Opinion on issue 1: \textbf{0.0} \\
+\footnotesize Opinion on issue 2: \textbf{0.5} \\
+\footnotesize Opinion on issue 3: \textbf{0.0} \\
+} \\
+\end{tabular}
+
+\bigskip
+\bigskip
+\smallskip
+\phantom{In this model, there are \textbf{three} buckets: one with agents
+$\alpha$ and $\delta$, one with agent $\beta$ only, and one with agent $\gamma$
+only.}
+\end{center}
+\end{frame}
+
+\begin{frame}[c]{Example} % Stephen
+
+\begin{center}
+\begin{tabular}{cp{1cm}c}
+\makecell{
+\color{darkgreen} \small Agent $\alpha$: \\
+\color{darkgreen} \footnotesize Opinion on issue 1: \textbf{0.0} \\
+\color{darkgreen} \footnotesize Opinion on issue 2: \textbf{0.5} \\
+\color{darkgreen} \footnotesize Opinion on issue 3: \textbf{0.0} \\
+} & &
+\makecell{
+\color{red} \small Agent $\beta$: \\
+\color{red} \footnotesize Opinion on issue 1: \textbf{1.0} \\
+\color{red} \footnotesize Opinion on issue 2: \textbf{1.0} \\
+\color{red} \footnotesize Opinion on issue 3: \textbf{1.0} \\
+} \\
+\smallskip \\
+\makecell{
+\color{blue} \small Agent $\gamma$: \\
+\color{blue} \footnotesize Opinion on issue 1: \textbf{0.6} \\
+\color{blue} \footnotesize Opinion on issue 2: \textbf{0.0} \\
+\color{blue} \footnotesize Opinion on issue 3: \textbf{0.2} \\
+} & &
+\makecell{
+\color{darkgreen} \small Agent $\delta$: \\
+\color{darkgreen} \footnotesize Opinion on issue 1: \textbf{0.0} \\
+\color{darkgreen} \footnotesize Opinion on issue 2: \textbf{0.5} \\
+\color{darkgreen} \footnotesize Opinion on issue 3: \textbf{0.0} \\
+} \\
+\end{tabular}
+
+\bigskip
+{In this model, there are \textbf{three} buckets: one with agents
+$\alpha$ and $\delta$, one with agent $\beta$ only, and one with agent $\gamma$
+only.}
+\end{center}
 \end{frame}
 
 
-\begin{frame}[c]{Define "clone pair" / anti-clone pair} % Stephen
+\begin{frame}[c]{One other bit of lingo} % Stephen
+
+\Large
+If a pair of agents agrees on \textit{every} issue (\textit{i.e.}, they're in
+the same bucket), we call them \textbf{clones} (or a ``clone pair.'')
+
+\bigskip
+
+If a pair of agents \underline{dis}agrees on every issue, we call them
+\textbf{anti-clones} (or an ``anti-clone pair.'')
 
 \end{frame}
-
 
 
 \begin{frame}[c]{Census plot w/o CI2} % Stephen
