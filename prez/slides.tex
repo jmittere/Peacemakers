@@ -66,6 +66,10 @@ What does this actually mean?
 
 % explain why we think this is a measure of polarization
 
+% "Imagine if you had a social network, and each agent had an opinion on some
+% issue that was between 0 and 1. You could think of it as liberal vs.
+% conservative, perhaps."
+
 % "echo chambers"
 \small 	\textbf{Assortativity} measures the tendency of agents to associate with other like-minded agents. 
 	\vspace{0.2in}
@@ -113,6 +117,11 @@ What does this actually mean?
 \item \textit{N} heterogenous agents who encounter each other on a social network.
 \item \textbf{Edge Probability} of a random Erd\"{o}s-R\'{e}nyi graph which controls network density
 \item Agents have opinions on multiple issues, each of which is on a continuum
+
+% Slow down a bit on this last item: express with your voice that unlike the
+% previous points, this is kind of a different thing than the audience might be
+% used to.
+
 \item \textbf{Openness Threshold} and \textbf{Disgust Threshold} that control the degree of agent opinion influence
 \end{itemize}
 
@@ -124,6 +133,9 @@ What does this actually mean?
 
 % Here is traditional bounded confidence (BC) from Hegelsmen-Krause and
 % Deffuant et al
+
+% Take your time here, and explain who the blue guy is and who the grey guy is
+% and what the 0-1 number line means.
 
 % Show one number line and two peeps
 \begin{figure}
@@ -150,6 +162,10 @@ What does this actually mean?
 
 \begin{frame}[c]{Results: Assortativity and Network Density}  % Justin
 
+% TODO: Justin: add dotted line at zero (maybe)
+% Slow down, and make this point slower.
+% Walk them through what the axes are.
+
 \begin{figure}
 	\includegraphics[width=0.9\textwidth]{images/Assort_edge.png}
 
@@ -161,14 +177,31 @@ Fewer (meaningful) social connections = higher polarization BUT only at the low 
 
 \end{frame}
 
-\begin{frame}[c]{Fig 2 explained}  % Justin
+\begin{frame}[c]{Results: Assortativity and Agent Openness}  % Justin
 
-%TODO: Justin verify
-%(Just for completeness, rerun paper graph Figure 2 with a much lower value of
-%edge prob (how about .05 instead of .5, for instance.) Then we’ll verify the
-%null hypothesis that “openness does not impact assortativity.”)
+% TODO: Justin: add dotted line at zero (def)
+% Walk them through what the axes are.
+% Make the point that "if openness is zero, no one ever changes their mind, and
+% so we would of course get zero assortativity (just random opinions)."
+% 
 
-openness threshold surprisingly does not seem to impact assortativity.
+% The way Stephen would explain it is this:
+% Higher openness can be viewed in two ways. It could mean "more open-minded
+% and receptive to others' opinions." But it could also mean "more willing to
+% blindly follow the opinions you hear around you." This latter interpretation
+% is why we (paradoxically) see lower polarization for lower openness values.
+% Takeaway: if a society's average openness is hovering between, say, .2 and
+% .3, a little more critical thinking could move things left past the tipping
+% point and end up with a less polarized society.
+
+% TODO: Justin: put in a sentence here summarizing the findings you will
+% articulate.
+
+% TODO: Justin: crop this pic
+
+\begin{center}
+\includegraphics[width=0.9\textwidth]{images/AssortOpenness.png}
+\end{center}
 
 \end{frame}
 
@@ -213,7 +246,7 @@ If people generally adhere to an entire suite of opinions, we term that society
 \textit{Why} does IA occur?
 
 Possible explanation \#1: perhaps there is some deep underlying
-principle to people's ideologies that connects seemingly unconnected issues.
+principle to people's value systems that connects seemingly unconnected issues.
 \pause
 
 \begin{center}
@@ -331,13 +364,26 @@ number of distinct opinion \textbf{buckets} that exist.
 
 \bigskip
 \pause
-A ``bucket'' is a specific set of numerical opinions on the various issues.
+\begin{itemize}
+\itemsep.1em
 
-At any point in simulated time, each agent is in one bucket, possibly with
+\item A ``bucket'' is a specific set of numerical opinions on the various issues.
+\pause
+\begin{itemize}
+\itemsep.1em
+\item For example: ``issue 1: 0.4, issue 2: 1.0, issue 3: 1.0.''
+\end{itemize}
+
+\pause
+
+\item At any point in simulated time, each agent is in one bucket, possibly with
 other agents.
 
-\textit{All agents in the same bucket agree on all the issues}, within a
+\pause
+\item \textit{All agents in the same bucket agree on all the issues}, within a
 threshold of $\varepsilon$ (.05).
+
+\end{itemize}
 
 \end{frame}
 
@@ -423,7 +469,7 @@ only.}
 
 \begin{frame}[c]{One other bit of lingo} % Stephen
 
-\Large
+%\Large
 If a pair of agents agrees on \textit{every} issue (\textit{i.e.}, they're in
 the same bucket), we call them \textbf{clones} (or a ``clone pair.'')
 
@@ -462,10 +508,10 @@ If a pair of agents \underline{dis}agrees on every issue, we call them
 
 \end{frame}
 
-\begin{frame}[c]{Heat maps: showing interplay of openness and disgust threshold
-with and without CI2} % Stephen
-
-\end{frame}
+%\begin{frame}[c]{Heat maps: showing interplay of openness and disgust threshold
+%with and without CI2} % Stephen
+%
+%\end{frame}
 
 
 % Tuck-away slide
@@ -483,6 +529,36 @@ with and without CI2} % Stephen
 %\end{frame}
 
 \begin{frame}[c]{Discussion and takeaways}  % Stephen & Justin
+
+%Justin:
+Lower network density leads to higher polarization. Takeaway: people need to
+get out more.
+
+%(If you are hearing from more individuals, you will be likely to
+%hear a more diverse set of opinions and won't get in an echo chamber as
+%easily.)
+
+\pause
+%Justin:
+If people are ``too open'' and easily believe what they hear, this can lead to
+echo chambers forming more readily. Takeaway: be more cautious and discerning
+about what you hear.
+% could mention "openness is a double-edged sword. On the one hand, you want to
+% be open to others' viewpoints. On the other hand, if you're too gullible, it
+% can make echo chambers happen more readily."
+
+\pause
+% Stephen:
+IA endogenously appears with CI2. We can't solely blame media outlets or
+ideologies.
+
+\pause
+Individual fix: Allow yourself the freedom to agree with someone on one thing
+and disagree with them on something else.
+
+\pause
+Society's fix: parties and global media outlets undoubtedly reinforce the IA
+phenomenon. We need voices from more buckets!
 
 \end{frame}
 
