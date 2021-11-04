@@ -40,4 +40,4 @@ sweep = bvmSweep({"issues":3, "l_steps":1000, "n_agents":500, 'CI2':True, 'd':1,
 #data.to_csv('MoreagentsAssortEdgeData.csv')
 data = pd.read_csv('AssortOpennessData.csv')
 print(data)
-sweep.plotScatter("Assortativity and Agent Openness",'AssortOpennessData.csv')
+sweep.plotScatter("",'AssortOpennessData.csv')
