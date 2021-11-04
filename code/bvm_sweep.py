@@ -46,9 +46,10 @@ class bvmSweep():
 
         plt.figure()
         plt.title(title)
-        plt.scatter(x=data['p'], y=data['avg_assort'], alpha=.7)
+        plt.scatter(x=data['o'], y=data['avg_assort'], alpha=.7)
         plt.xticks(np.arange(0.0,1.1,0.1))
-        plt.xlabel('Number of Meaningful Social Connections')
+        plt.xlabel('Openness Threshold')
         plt.ylabel('Average Assortativity Across All Issues')
+        plt.axhline(y=0, linestyle = 'dotted')
         plt.show()
 
