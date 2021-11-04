@@ -1,12 +1,16 @@
 \documentclass[12pt]{beamer}
 \usepackage{mathtools}
 \usepackage{makecell}
+\usepackage{caption}
+\captionsetup[figure]{labelformat=empty}
 \useoutertheme{infolines}
 \usetheme{default}
 \usefonttheme{serif}
 %\usefonttheme{structuresmallcapsserif}
 \hypersetup{colorlinks=true,linkcolor=blue}
 \setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]{}
+\setbeamertemplate{footline}{}
 \author{Mittereder, \textit{et. al.}}
 \definecolor{darkgreen}{rgb}{0,.5,0}
 \setlength{\parskip}{.1in}
@@ -57,9 +61,11 @@ What does this actually mean?
 \itemsep.1em
 \item People's views becoming more \textit{extreme}?
 \pause
+\item People's dialogue becoming more \textit{combative}?
+\pause
 \item People becoming more \textit{stubborn}? (less willing to reconsider views)
 \pause
-\item People only associating with like-minded others?
+\item People only associating with like-minded others? (echo chambers)
 \end{itemize}
 
 \end{frame}
@@ -332,11 +338,12 @@ it.
 
 \begin{frame}[c]{Cross-Issue Influence (Positive)}  % Justin
 
-% Show two number line and two peeps, with an attraction due to openness
-We define \textbf{Cross-Issue Influence} (CI2) as the effect that a person's
-social contact can have on one of their opinions based on their agreement (or
-disagreement) on a different issue.
+We define \textbf{Cross-Issue Influence} (CI2) as the effect that an agent can
+have on one of its neighbor's opinions based on their agreement (or
+disagreement) on a \textit{different} issue. (Traditional BC models have used
+``I2.'')
 
+\pause
 \begin{figure}
 	\includegraphics[width=0.75\textwidth]{images/CI2Positive.png}
 	%TODO: add captions
@@ -370,7 +377,6 @@ number of distinct opinion \textbf{buckets} that exist.
 \itemsep.1em
 
 \item A ``bucket'' is a specific set of numerical opinions on the various issues.
-\pause
 \begin{itemize}
 \itemsep.1em
 \item For example: ``issue 1: 0.4, issue 2: 1.0, issue 3: 1.0.''
@@ -386,7 +392,6 @@ other agents.
 threshold of $\varepsilon$ (.05).
 
 \end{itemize}
-
 \end{frame}
 
 
@@ -469,43 +474,59 @@ only.}
 \end{frame}
 
 
-\begin{frame}[c]{One other bit of lingo} % Stephen
+\begin{frame}[c]{Interpretation} % Stephen
 
-%\Large
-If a pair of agents agrees on \textit{every} issue (\textit{i.e.}, they're in
+\large
+We interpret \textbf{fewer buckets} to mean \textbf{more Issue Alignment} (and hence, more polarization).
+
+\pause
+\normalsize
+\bigskip
+One other bit of lingo:
+
+\begin{itemize}
+\itemsep.1em
+\item If a pair of agents agrees on \textit{every} issue (\textit{i.e.}, they're in
 the same bucket), we call them \textbf{clones} (or a ``clone pair.'')
 
 \bigskip
 
-If a pair of agents \underline{dis}agrees on every issue, we call them
+\item If a pair of agents \underline{dis}agrees on every issue, we call them
 \textbf{anti-clones} (or an ``anti-clone pair.'')
+\end{itemize}
 
 \end{frame}
 
 
-\begin{frame}[c]{Census plot with I2 only} % Stephen
+\begin{frame}[c]{Census plot: number of agreements (\textbf{I2 only})} % Stephen
 
 \vspace{-.3in}
 \begin{center}
 \hspace{-.6in} \includegraphics[width=1.11\textwidth]{census3issuesI2.png}
+\vspace{-.3in}
+\scriptsize (Three issues)
 \end{center}
 
 \end{frame}
 
-\begin{frame}[c]{Census plot with \textbf{CI2}} % Stephen
+\begin{frame}[c]{Census plot: number of agreements (\textbf{with CI2})} % Stephen
 
 \vspace{-.3in}
 \begin{center}
 \hspace{-.6in} \includegraphics[width=1.11\textwidth]{census3issuesCI2.png}
+\vspace{-.3in}
+\scriptsize (Three issues)
 \end{center}
 
 \end{frame}
 
-\begin{frame}[c]{Census plot with \textbf{CI2}} % Stephen
+\begin{frame}[c]{Census plot: number of agreements (\textbf{with CI2})} % Stephen
 
 \vspace{-.3in}
 \begin{center}
 \hspace{-.6in} \includegraphics[width=1.11\textwidth]{census10issuesCI2.png}
+\vspace{-.3in}
+\scriptsize (Ten issues)
 \end{center}
 
 \end{frame}
