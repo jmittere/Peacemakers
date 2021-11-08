@@ -1,15 +1,16 @@
 from bvm_model import *
 from mesa.batchrunner import BatchRunner
+from mesa.batchrunner import BatchRunnerMP
 
 class bvmSweep():
 
     def __init__(self, fixedParams,variableParams, iters):
-        self.batch_run = BatchRunner(
+        self.batch_run = BatchRunnerMP(
                 bvmModel, 
                 fixed_parameters = fixedParams,
                 variable_parameters = variableParams,
                 iterations=iters,
-                model_reporters = {'avg_assort':get_avg_assort}
+                model_reporters = {'Buckets':updateBuckets}
                 )
         self.iterations = iters
 
@@ -46,10 +47,10 @@ class bvmSweep():
 
         plt.figure()
         plt.title(title)
-        plt.scatter(x=data['o'], y=data['avg_assort'], alpha=.7)
+        plt.scatter(x=data['p'], y=data['Buckets'], alpha=.7)
         plt.xticks(np.arange(0.0,1.1,0.1))
-        plt.xlabel('Openness Threshold')
-        plt.ylabel('Average Assortativity Across All Issues')
-        plt.axhline(y=0, linestyle = 'dotted')
+        plt.xlabel('Edge Probability')
+        plt.ylabel('Number of Buckets')
+        #plt.axhline(y=0, linestyle = 'dotted')
         plt.show()
 
