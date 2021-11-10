@@ -332,9 +332,9 @@ class bvmModel(Model):
 
         #self.datacollector._new_model_reporter("numberOfNonUniformIssues",
         #    numNonUniformIssues)
-
-        #the block below isn't pickleable (cant run BatchRunnerMP) due to the lambda in getNumAgentPairsWithKAgreements
         
+        #TODO: STEPHEN LOOK HERE
+        #the block below isn't pickleable (cant run BatchRunnerMP) due to the lambda in getNumAgentPairsWithKAgreementsClosure
         for numAgreements in range(1,self.num_issues):
             self.datacollector._new_model_reporter(
                 f"num{numAgreements}AgreementPairs",
