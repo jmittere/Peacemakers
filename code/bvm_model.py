@@ -334,12 +334,11 @@ class bvmModel(Model):
         #    numNonUniformIssues)
 
         #the block below isn't pickleable (cant run BatchRunnerMP) due to the lambda in getNumAgentPairsWithKAgreements
-        '''
+        
         for numAgreements in range(1,self.num_issues):
             self.datacollector._new_model_reporter(
                 f"num{numAgreements}AgreementPairs",
-                getNumAgentPairsWithKAgreements(self,numAgreements))
-        '''
+                getNumAgentPairsWithKAgreementsClosure(numAgreements))
         
         self.datacollector.collect(self)
 
@@ -371,9 +370,9 @@ class bvmModel(Model):
         self.steps += 1
     
     def printBucketInfo(self):
-        print("Buckets: ", test.buckets)
-        print("Number of buckets: ", len(test.buckets)) 
-        for b,cnt in test.buckets.items():
+        print("Buckets: ", self.buckets)
+        print("Number of buckets: ", len(self.buckets)) 
+        for b,cnt in self.buckets.items():
             x = ()
             for i in b:
                 num = round(i)
@@ -406,7 +405,7 @@ class bvmModel(Model):
 if __name__ == "__main__":
 
     #lsteps, agents, p, issues, othresh, dthresh, CI2?
-    test = bvmModel(1000, 100, 0.3, 10, 0.10, .60, True)
+    test = bvmModel(1000, 100, 0.3, 3, 0.10, .60, True)
 
     for i in range(test.l_steps):
         test.step()
