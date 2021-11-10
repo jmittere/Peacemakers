@@ -6,6 +6,7 @@ import math
 
 
 def cleanData(data):    
+    '''gets the avg number of buckets for each set of params from a dataframe from a param sweep'''
     dRange = np.arange(0.4, .95, 0.05)
     oRange = np.arange(0.05, .45, 0.05)
     bucketSum = 0
@@ -30,14 +31,15 @@ def cleanData(data):
 
 
 
-#suite = bvmSuite({"p":.3, "o":.20, "d":.50,"issues":3, "l_steps":1000, "n_agents":50, 'CI2':True}, 25)
+#suite = bvmSuite({"p":.3, "o":.20, "d":.50,"issues":3, "l_steps":1000, "n_agents":50, 'CI2':True}, 2)
+#suite.run()
 
-sweep = bvmSweep({"issues":3, "l_steps":1000, "n_agents":500, 'CI2':True, 'd':1, 'o':0.1},{"p":np.arange(0.05,1,0.05)}, 10)
+sweep = bvmSweep({"issues":3, "l_steps":1000, "n_agents":100, 'CI2':False, 'd':.55, 'o':0.1},{"p":np.arange(0.05,1,0.05)}, 5)
+sweep.run()
+data = sweep.getData()
 
-#sweep.run()
-#data = sweep.getData()
-
-#data.to_csv('MoreagentsAssortEdgeData.csv')
-data = pd.read_csv('AssortOpennessData.csv')
+data.to_csv('Data.csv')
+#data = pd.read_csv('Data.csv')
 print(data)
-sweep.plotScatter("",'AssortOpennessData.csv')
+
+#sweep.plotScatter("I2: Buckets and Edge Probability, d:0.55 , o:0.1 , n:100, & issues:3",'I2BucketsEdgeProbSweep2.csv')

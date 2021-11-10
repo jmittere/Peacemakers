@@ -80,7 +80,6 @@ def getNumAgentPairsWithKAgreements(model, k):
     pwa = getNumPairwiseAgreements(model)
     return sum([ a == k for a in pwa ])
 
-
 def getNumPairwiseAgreements(model):
     # For every pair of agents in the entire model, determine the number of
     # issues on which they agree. ("agree" means "in the same cluster for that
@@ -90,7 +89,6 @@ def getNumPairwiseAgreements(model):
     agreementNum = 0
     for index1 in range(len(agents)):
         for index2 in range(index1+1,len(agents)):
-            # TODO: is CLUSTER_THRESHOLD the right thing to use here?
             agreements[agreementNum] = agents[index1].numAgreementsWith(
                     agents[index2], CLUSTER_THRESHOLD)
             agreementNum += 1
@@ -146,33 +144,6 @@ def doAutoGMM(model, issueNum):
 
 def returnPersuasionsPerCapita(model):
     return model.persuasions / model.num_agents
-
-def returnNumLowOpinions(model, issueNum):
-    #returns the number of agents within EXTREME_THRESHOLD of 0
-    agents = model.schedule.agents
-    agentCount=0
-    for a in agents:
-        if a.opinions[issueNum]<=1-EXTREME_THRESHOLD:
-            agentCount+=1
-    return agentCount
-
-def returnNumHighOpinions(model, issueNum):
-    #returns the number of agents within EXTREME_THRESHOLD of 1
-    agents = model.schedule.agents
-    agentCount=0
-    for a in agents:
-        if a.opinions[issueNum]>=EXTREME_THRESHOLD:
-            agentCount+=1
-    return agentCount
-
-def returnNumModerateOpinions(model, issueNum):
-    #returns number of agents within (1-EXTREME_THRESHOLD,EXTREME_THRESHOLD)
-    agents = model.schedule.agents
-    agentCount=0
-    for a in agents:
-        if 1-EXTREME_THRESHOLD<=a.opinions[issueNum]<=EXTREME_THRESHOLD:
-            agentCount+=1
-    return agentCount
 
 # Return true if all agents have an identical opinion on this issue.
 def isIssueUniform(model, issueNum):
@@ -339,52 +310,36 @@ class bvmModel(Model):
             self.G.nodes[i]["agent"] = agent
             self.schedule.add(agent)
 
-        # create all the mesa "reporters" to gather stats
+
+        # create all the mesa "reporters" to gather stats 
+        reporters = {"Buckets":updateBuckets, "Steps":getSteps, "assortativity":get_avg_assort, 
+                "numClonePairs":getNumClonePairs, "numAnticlonePairs":getNumAnticlonePairs}
+
         '''
-        reporters =  {"clustersforIssue_{}".format(i):
+        clusterDict =  {"clustersforIssue_{}".format(i):
                 lambda model, issueNum=i:
                 getNumClusters(model,issueNum) for i in range(self.num_issues)}
+        reporters.update(clusterDict)
+        
+        autoGmmReporters = {"autogmmclustersforIssue_{}".format(i):lambda model, issueNum=i: doAutoGMM(model,issueNum) for i in range(self.num_issues)}
+        reporters.update(autoGmmReporters)
         '''
-        #autoGmmReporters = {"autogmmclustersforIssue_{}".format(i):lambda model, issueNum=i: doAutoGMM(model,issueNum) for i in range(self.num_issues)}
-
-        repubs = {"low_iss_{}".format(i):
-            lambda model, issueNum=i: returnNumLowOpinions(model,issueNum)
-                for i in range(self.num_issues)}
-        dems = {"high_iss_{}".format(i):
-            lambda model, issueNum=i:returnNumHighOpinions(model,issueNum)
-                for i in range(self.num_issues)}
-        mods = {"mod_iss_{}".format(i):
-            lambda model, issueNum=i: returnNumModerateOpinions(model,issueNum)
-                for i in range(self.num_issues)}
-        reporters = {} #TODO:take out this line if using reporters above
-        reporters.update(repubs)
-        reporters.update(dems)
-        reporters.update(mods)
-        #reporters.update(autoGmmReporters)
-
+        
         self.datacollector = DataCollector(
                 model_reporters=reporters,
                 agent_reporters={}
                 )
 
-        self.datacollector._new_model_reporter("Steps", getSteps)
-        self.datacollector._new_model_reporter("Buckets", updateBuckets)
-        #self.datacollector._new_model_reporter("assortativity", get_avg_assort)
         #self.datacollector._new_model_reporter("numberOfNonUniformIssues",
         #    numNonUniformIssues)
-        #self.datacollector._new_model_reporter("persuasions", getPersuasions)
-        #self.datacollector._new_model_reporter("repulsions", getRepulsions)
-
-        self.datacollector._new_model_reporter("numClonePairs",
-            getNumClonePairs)
-        self.datacollector._new_model_reporter("numAnticlonePairs",
-            getNumAnticlonePairs)
-
+        
+        #TODO: STEPHEN LOOK HERE
+        #the block below isn't pickleable (cant run BatchRunnerMP) due to the lambda in getNumAgentPairsWithKAgreementsClosure
         for numAgreements in range(1,self.num_issues):
             self.datacollector._new_model_reporter(
                 f"num{numAgreements}AgreementPairs",
                 getNumAgentPairsWithKAgreementsClosure(numAgreements))
-
+        
         self.datacollector.collect(self)
 
 
@@ -415,9 +370,9 @@ class bvmModel(Model):
         self.steps += 1
     
     def printBucketInfo(self):
-        print("Buckets: ", test.buckets)
-        print("Number of buckets: ", len(test.buckets)) 
-        for b,cnt in test.buckets.items():
+        print("Buckets: ", self.buckets)
+        print("Number of buckets: ", len(self.buckets)) 
+        for b,cnt in self.buckets.items():
             x = ()
             for i in b:
                 num = round(i)
@@ -450,7 +405,7 @@ class bvmModel(Model):
 if __name__ == "__main__":
 
     #lsteps, agents, p, issues, othresh, dthresh, CI2?
-    test = bvmModel(1000, 100, 0.3, 10, 0.10, .60, True)
+    test = bvmModel(1000, 100, 0.3, 3, 0.10, .60, True)
 
     for i in range(test.l_steps):
         test.step()
