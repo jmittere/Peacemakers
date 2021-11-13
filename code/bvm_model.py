@@ -68,11 +68,29 @@ def getNumAnticlonePairs(model):
     # clusters) on every issue.
     return getNumAgentPairsWithKAgreements(model,0)
 
-def getNumAgentPairsWithKAgreementsClosure(k):
-    # Return a function, which takes only a model as an argument, which will
-    # compute the number of pairs of agents who "agree" (opinion in the same
-    # cluster) on exactly k issues.
-    return lambda model: getNumAgentPairsWithKAgreements(model, k)
+# BEGIN ELEGANT
+#def getNumAgentPairsWithKAgreementsClosure(k):
+#    # Return a function, which takes only a model as an argument, which will
+#    # compute the number of pairs of agents who "agree" (opinion in the same
+#    # cluster) on exactly k issues.
+#    return lambda model: getNumAgentPairsWithKAgreements(model, k)
+# END ELEGANT
+
+# Since Mesa won't allow a lambda expression, the ridiculously bad code below
+# is used instead of the elegant code above.  - SD
+# BEGIN UGLY
+def getNumAgentPairsWith1Agreements(model):
+    pwa = getNumPairwiseAgreements(model)
+    return sum([ a == 1 for a in pwa ])
+
+def getNumAgentPairsWith2Agreements(model):
+    pwa = getNumPairwiseAgreements(model)
+    return sum([ a == 2 for a in pwa ])
+
+def getNumAgentPairsWith3Agreements(model):
+    pwa = getNumPairwiseAgreements(model)
+    return sum([ a == 3 for a in pwa ])
+# END UGLY
 
 def getNumAgentPairsWithKAgreements(model, k):
     # Return the number of pairs of agents who "agree" (opinion in the same
@@ -333,12 +351,10 @@ class bvmModel(Model):
         #self.datacollector._new_model_reporter("numberOfNonUniformIssues",
         #    numNonUniformIssues)
         
-        #TODO: STEPHEN LOOK HERE
-        #the block below isn't pickleable (cant run BatchRunnerMP) due to the lambda in getNumAgentPairsWithKAgreementsClosure
         for numAgreements in range(1,self.num_issues):
             self.datacollector._new_model_reporter(
                 f"num{numAgreements}AgreementPairs",
-                getNumAgentPairsWithKAgreementsClosure(numAgreements))
+                globals()[f"getNumAgentPairsWith{numAgreements}Agreements"])
         
         self.datacollector.collect(self)
 
