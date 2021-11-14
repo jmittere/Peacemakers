@@ -4,7 +4,6 @@ import pandas as pd
 import numpy as np
 import math
 
-
 def cleanData(data):    
     '''gets the avg number of buckets for each set of params from a dataframe from a param sweep'''
     dRange = np.arange(0.4, .95, 0.05)
@@ -34,12 +33,12 @@ def cleanData(data):
 #suite = bvmSuite({"p":.3, "o":.20, "d":.50,"issues":3, "l_steps":1000, "n_agents":50, 'CI2':True}, 2)
 #suite.run()
 
-sweep = bvmSweep({"issues":3, "l_steps":1000, "n_agents":100, 'CI2':False, 'd':.55, 'o':0.1},{"p":np.arange(0.05,1,0.05)}, 5)
+sweep = bvmSweep({"issues":3, "l_steps":1500, "p":.20, 'CI2':False, 'd':.55, 'o':0.1},{"n_agents":np.arange(25,1050,25)}, 5)
 sweep.run()
 data = sweep.getData()
 
-data.to_csv('Data.csv')
-#data = pd.read_csv('Data.csv')
+data.to_csv('I2BucketsAgentsData.csv')
+#data = pd.read_csv('CI2BucketsAgentsData.csv')
 print(data)
 
-#sweep.plotScatter("I2: Buckets and Edge Probability, d:0.55 , o:0.1 , n:100, & issues:3",'I2BucketsEdgeProbSweep2.csv')
+sweep.plotScatter("I2: Buckets and Number of Agents, d:0.55 , o:0.1 , p:0.20, & issues:3",'I2BucketsAgentsData.csv')

@@ -47,9 +47,9 @@ class bvmSweep():
 
         plt.figure()
         plt.title(title)
-        plt.scatter(x=data['p'], y=data['Buckets'], alpha=.7)
-        plt.xticks(np.arange(0.0,1.1,0.1))
-        plt.xlabel('Edge Probability')
+        plt.scatter(x=data['n_agents'], y=data['Buckets'], alpha=.7)
+        plt.xticks(np.arange(0,1050, 50))
+        plt.xlabel('Number of Agents')
         plt.ylabel('Number of Buckets')
         #plt.axhline(y=0, linestyle = 'dotted')
         plt.show()
