@@ -55,13 +55,19 @@ def getMultimodalityStatistic(model):
 
     # For now, just use a blunt object: number of anti-clones and clones.
     return (getNumAgentPairsWithKAgreements(model, 0) +
-        getNumAgentPairsWithKAgreements(model, model.num_issues))
+            getNumAgentPairsWithKAgreements(model, model.num_issues))
+
+def getPercentPolarized(model):
+    #returns the percentage of the populace that is either a clone or anticlone
+    num = getNumClonePairs(model) + getNumAnticlonePairs(model)
+    den = scipy.special.binom(model.num_agents,2)
+    return num/den
 
 def getNumClonePairs(model):
     # Return the number of pairs of agents who "agree" (opinion in the same
     # cluster) on every issue.
     return getNumAgentPairsWithKAgreements(model,
-        len(model.schedule.agents[0].opinions))
+            model.num_issues)
 
 def getNumAnticlonePairs(model):
     # Return the number of pairs of agents who "disagree" (opinion in different
@@ -127,7 +133,7 @@ def get_avg_assort(model):
         else:
             try:
                 assort = nx.numeric_assortativity_coefficient(model.G,
-                    "iss_{}".format(i))
+                        "iss_{}".format(i))
 
                 assorts.append(assort)
             except RuntimeWarning:
@@ -230,33 +236,33 @@ def updateBuckets(model):
                     model.buckets[newKey] = newVal #set new bucket
                     if newKey != opinionVals: #new key and old key arent the same, if they are the same, don't delete it
                         del model.buckets[opinionVals] #delete old bucket
-                
+
                     #print(model.buckets[newKey])
                     break
-            
+
             if not identical: #agent doesn't belong to any existing buckets, so create a new bucket for this agent
                 #print("Not identical...creating new")
                 opinionKey = tuple(a.opinions)
                 model.buckets[opinionKey] = [a]
-    
+
     return len(model.buckets)
 
 def plotBuckets(model):
-   fig = plt.figure()
-   xlabels = []
-   for j in model.buckets.keys():
-       roundedKey = ""
-       for element in j:
-           roundedKey += str(round(element,2)) + ", "
-       roundedKey = roundedKey[:-2] #remove comma and space
-       xlabels.append(roundedKey)
-   buckets = [len(i) for i in model.buckets.values()]
-   plt.bar(xlabels, buckets, width=0.4)
-   plt.title('Opinion Buckets')
-   plt.ylabel('Number of Agents')
-   plt.xlabel('Opinion Values for the Bucket')
-   plt.show()
-   
+    fig = plt.figure()
+    xlabels = []
+    for j in model.buckets.keys():
+        roundedKey = ""
+        for element in j:
+            roundedKey += str(round(element,2)) + ", "
+        roundedKey = roundedKey[:-2] #remove comma and space
+        xlabels.append(roundedKey)
+    buckets = [len(i) for i in model.buckets.values()]
+    plt.bar(xlabels, buckets, width=0.4)
+    plt.title('Opinion Buckets')
+    plt.ylabel('Number of Agents')
+    plt.xlabel('Opinion Values for the Bucket')
+    plt.show()
+
 
 def numNonUniformIssues(model):
     # Returns the number of issues on which all agents don't agree (within the
@@ -324,25 +330,24 @@ class bvmModel(Model):
                 agent = CrossIssueAgent(i, self)
             else:
                 agent = SameIssueAgent(i, self)
-            
+
             self.G.nodes[i]["agent"] = agent
             self.schedule.add(agent)
 
 
         # create all the mesa "reporters" to gather stats 
         reporters = {"Buckets":updateBuckets, "Steps":getSteps, "assortativity":get_avg_assort, 
-                "numClonePairs":getNumClonePairs, "numAnticlonePairs":getNumAnticlonePairs}
-
+                "numClonePairs":getNumClonePairs, "numAnticlonePairs":getNumAnticlonePairs, "PercentPolarized":getPercentPolarized}
         '''
         clusterDict =  {"clustersforIssue_{}".format(i):
                 lambda model, issueNum=i:
                 getNumClusters(model,issueNum) for i in range(self.num_issues)}
         reporters.update(clusterDict)
-        
+
         autoGmmReporters = {"autogmmclustersforIssue_{}".format(i):lambda model, issueNum=i: doAutoGMM(model,issueNum) for i in range(self.num_issues)}
         reporters.update(autoGmmReporters)
         '''
-        
+
         self.datacollector = DataCollector(
                 model_reporters=reporters,
                 agent_reporters={}
@@ -350,14 +355,14 @@ class bvmModel(Model):
 
         #self.datacollector._new_model_reporter("numberOfNonUniformIssues",
         #    numNonUniformIssues)
-        
+        '''
         for numAgreements in range(1,self.num_issues):
             self.datacollector._new_model_reporter(
-                f"num{numAgreements}AgreementPairs",
-                globals()[f"getNumAgentPairsWith{numAgreements}Agreements"])
-        
-        self.datacollector.collect(self)
+                    f"num{numAgreements}AgreementPairs",
+                    globals()[f"getNumAgentPairsWith{numAgreements}Agreements"])
+        '''
 
+        self.datacollector.collect(self)
 
     def step(self):
         self.influencesLastStep = 0
@@ -384,7 +389,7 @@ class bvmModel(Model):
             self.running = False
 
         self.steps += 1
-    
+
     def printBucketInfo(self):
         print("Buckets: ", self.buckets)
         print("Number of buckets: ", len(self.buckets)) 
@@ -394,7 +399,7 @@ class bvmModel(Model):
                 num = round(i)
                 x = x + (num,)
             print("{} agents in Bucket: {}".format(len(cnt), x))
-    
+
     def plotAgreementCensus(self):
         df = self.datacollector.get_model_vars_dataframe()
         fig, ax = plt.subplots()
@@ -403,16 +408,16 @@ class bvmModel(Model):
         colors = get_cmap('Greys')
         for numAgreements in range(1,self.num_issues):
             ax.plot(df[f'num{numAgreements}AgreementPairs'],
-                label=f'{numAgreements} agreements' if numAgreements > 1 else
+                    label=f'{numAgreements} agreements' if numAgreements > 1 else
                     '1 agreement', color=colors(numAgreements/self.num_issues))
 
-        ax.set_xlabel('Time (steps)')
+            ax.set_xlabel('Time (steps)')
         ax.set_ylabel('# clones/anti-clones/1 Agreements/2 Agreements')
         ax.legend(loc='best')
-    
+
         ax2 = ax.twinx()
         ax2.plot(df['Buckets'], label='Buckets', color='maroon',
-            linestyle="dashed")
+                linestyle="dashed")
         ax2.set_ylabel("Number of Buckets", color='maroon')
         ax2.axhline(y=0, linestyle = 'dotted')
         plt.annotate("Buckets: {}".format(len(self.buckets)), xy=(.9*self.steps,len(self.buckets)), fontsize='medium', fontweight='heavy', fontvariant='small-caps', fontstyle='italic')
@@ -427,10 +432,10 @@ if __name__ == "__main__":
         test.step()
         if(test.running == False):
             break
-    
+
     df = test.datacollector.get_model_vars_dataframe()
     df.to_csv("singleRun.csv")
     print(df)
-
+    getPercentPolarized(test)
     test.printBucketInfo()
     test.plotAgreementCensus()
