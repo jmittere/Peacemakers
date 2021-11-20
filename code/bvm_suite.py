@@ -1,4 +1,5 @@
 from bvm_model import *
+from model_functions import *
 from mesa.batchrunner import FixedBatchRunner
 from mesa.batchrunner import BatchRunnerMP
 import matplotlib.pyplot as plt

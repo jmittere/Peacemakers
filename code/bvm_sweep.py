@@ -1,6 +1,8 @@
 from bvm_model import *
+from model_functions import *
 from mesa.batchrunner import BatchRunner
 from mesa.batchrunner import BatchRunnerMP
+import seaborn
 
 class bvmSweep():
 
@@ -45,12 +47,15 @@ class bvmSweep():
         else:
             data = self.data
 
-        plt.figure()
-        plt.title(title)
-        plt.scatter(x=data['n_agents'], y=data['Buckets'], alpha=.7)
-        plt.xticks(np.arange(0,1050, 50))
-        plt.xlabel('Number of Agents')
-        plt.ylabel('Number of Buckets')
+        fig,ax = plt.subplots()
+        ax.set_title(title)
+        #seaborn.stripplot(x=data['n_agents'], y=data['Buckets'],jitter=True, ax = ax)
+        #seaborn.scatterplot(x=data['n_agents'], y=data['Buckets'],x_jitter=True, ax = ax,)
+        seaborn.regplot(x=data['p'], y=data['Buckets'],y_jitter=.45, fit_reg=False,ax = ax)
+        #plt.scatter(x=data['n_agents'], y=data['Buckets'], alpha=.7)
+        ax.set_xticks(np.arange(0,1.05, .1))
+        ax.set_xlabel('Edge Probability')
+        ax.set_ylabel('Number of Buckets')
         #plt.axhline(y=0, linestyle = 'dotted')
         plt.show()
 
