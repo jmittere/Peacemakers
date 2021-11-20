@@ -21,15 +21,17 @@ from model_functions import *
 from cross_issue_agent import CrossIssueAgent
 from same_issue_agent import SameIssueAgent
 
-class baModel(Model):
+
+class wsModel(Model):
 
     # l_steps: max # of simulation iterations 
     # n_agents: # of agents
-    # m: number of edges for agents in Barabasi-Albert
+    # k: each node is joined with its k nearest neighbors in a ring
+    # p: prob of rewiring edge
     # issues: # of issues for each agent
     # o: openness threshold for agents
     # d: disgust threshold for agents
-    def __init__(self, l_steps, n_agents, m, issues, o, d, CI2=True, seed=None):
+    def __init__(self, l_steps, n_agents, k, p, issues, o, d, CI2=True, seed=None):
         super().__init__()
         self.l_steps = l_steps
         self.num_agents = n_agents
@@ -52,9 +54,7 @@ class baModel(Model):
                 linkage='ward', covariance_type='full')
 
         # generate ER graph with n_agents nodes and prob of edge of p
-        self.G = nx.barabasi_albert_graph(n_agents, m)
-        while not nx.is_connected(self.G):
-            self.G = nx.barabasi_albert_graph(n_agents, m)
+        self.G = nx.connected_watts_strogatz_graph(n_agents,k, p)
 
         # instantiate and add agents
         for i in range(self.num_agents):
@@ -80,7 +80,7 @@ class baModel(Model):
         autoGmmReporters = {"autogmmclustersforIssue_{}".format(i):lambda model, issueNum=i: doAutoGMM(model,issueNum) for i in range(self.num_issues)}
         reporters.update(autoGmmReporters)
         '''
-
+        #reporters = {}
         self.datacollector = DataCollector(
                 model_reporters=reporters,
                 agent_reporters={}
@@ -133,8 +133,8 @@ class baModel(Model):
 
 if __name__ == "__main__":
 
-    #lsteps, agents, m, issues, othresh, dthresh, CI2?
-    test = baModel(1000, 100, 2, 3, 0.10, .60, True)
+    #lsteps, agents, k, p, issues, othresh, dthresh, CI2?
+    test = wsModel(1000, 100, 3, 0.15, 3, 0.10, .55, True)
 
     for i in range(test.l_steps):
         test.step()
@@ -145,7 +145,6 @@ if __name__ == "__main__":
     df.to_csv("singleRun.csv")
     print(df)
     nx.draw(test.G, with_labels=True)
-    plt.show()
     getPercentPolarized(test)
     test.printBucketInfo()
     plotAgreementCensus(test)
