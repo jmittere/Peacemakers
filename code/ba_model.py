@@ -288,15 +288,15 @@ def getRepulsions(model):
 def getSteps(model):
     return model.steps
 
-class bvmModel(Model):
+class baModel(Model):
 
     # l_steps: max # of simulation iterations 
     # n_agents: # of agents
-    # p: prob of edge for Erdos-renyi
+    # m: number of edges for agents in Barabasi-Albert
     # issues: # of issues for each agent
     # o: openness threshold for agents
     # d: disgust threshold for agents
-    def __init__(self, l_steps, n_agents, p, issues, o, d, CI2=True, seed=None):
+    def __init__(self, l_steps, n_agents, m, issues, o, d, CI2=True, seed=None):
         super().__init__()
         self.l_steps = l_steps
         self.num_agents = n_agents
@@ -319,9 +319,9 @@ class bvmModel(Model):
                 linkage='ward', covariance_type='full')
 
         # generate ER graph with n_agents nodes and prob of edge of p
-        self.G = nx.erdos_renyi_graph(n_agents, p)
+        self.G = nx.barabasi_albert_graph(n_agents, m)
         while not nx.is_connected(self.G):
-            self.G = nx.erdos_renyi_graph(n_agents, p)
+            self.G = nx.erdos_renyi_graph(n_agents, m)
 
         # instantiate and add agents
         for i in range(self.num_agents):
@@ -355,12 +355,10 @@ class bvmModel(Model):
 
         #self.datacollector._new_model_reporter("numberOfNonUniformIssues",
         #    numNonUniformIssues)
-        '''
         for numAgreements in range(1,self.num_issues):
             self.datacollector._new_model_reporter(
                     f"num{numAgreements}AgreementPairs",
                     globals()[f"getNumAgentPairsWith{numAgreements}Agreements"])
-        '''
 
         self.datacollector.collect(self)
 
@@ -425,8 +423,8 @@ class bvmModel(Model):
 
 if __name__ == "__main__":
 
-    #lsteps, agents, p, issues, othresh, dthresh, CI2?
-    test = bvmModel(1000, 100, 0.3, 3, 0.10, .60, True)
+    #lsteps, agents, m, issues, othresh, dthresh, CI2?
+    test = baModel(1000, 100, 3, 3, 0.10, .60, True)
 
     for i in range(test.l_steps):
         test.step()
