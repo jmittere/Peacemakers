@@ -54,7 +54,7 @@ class wsModel(Model):
                 linkage='ward', covariance_type='full')
 
         # generate ER graph with n_agents nodes and prob of edge of p
-        self.G = nx.connected_watts_strogatz_graph(n_agents,k, p)
+        self.G = nx.connected_watts_strogatz_graph(n_agents,k, p, seed=seed)
 
         # instantiate and add agents
         for i in range(self.num_agents):
@@ -134,7 +134,7 @@ class wsModel(Model):
 if __name__ == "__main__":
 
     #lsteps, agents, k, p, issues, othresh, dthresh, CI2?
-    test = wsModel(1000, 100, 3, 0.15, 3, 0.10, .55, True)
+    test = wsModel(1000, 100, 5, 0.15, 3, 0.10, .55, True, 1000)
 
     for i in range(test.l_steps):
         test.step()

@@ -134,7 +134,7 @@ class baModel(Model):
 if __name__ == "__main__":
 
     #lsteps, agents, m, issues, othresh, dthresh, CI2?
-    test = baModel(1000, 100, 2, 3, 0.10, .60, True)
+    test = baModel(1000, 100, 2, 3, 0.10, .55, True)
 
     for i in range(test.l_steps):
         test.step()
