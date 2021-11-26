@@ -1,0 +1,1 @@
+WS graphs are more likely to end up with more than 2 buckets compared to similar densities for ER or BA. This is consistent with what I anectdotally was noticing when running the WS model in single runs. 
