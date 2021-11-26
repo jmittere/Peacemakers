@@ -242,8 +242,19 @@ def updateBuckets(model):
                 #print("Not identical...creating new")
                 opinionKey = tuple(a.opinions)
                 model.buckets[opinionKey] = [a]
-
+    
     return len(model.buckets)
+
+def validateBuckets(model):
+    for a in model.schedule.agents:
+        seen = False
+        for buckKey, buckVal in model.buckets.items():
+            if(a in buckVal):
+                if(seen == True):
+                    print(f"{a} in more than one bucket")
+                    break
+                else:
+                    seen = True
 
 def plotBuckets(model):
     fig = plt.figure()
@@ -307,13 +318,14 @@ def plotAgreementCensus(model):
         ax2.set_ylabel("Number of Buckets", color='maroon')
         ax2.axhline(y=0, linestyle = 'dotted')
         plt.annotate("Buckets: {}".format(len(model.buckets)), xy=(.9*model.steps,len(model.buckets)), fontsize='medium', fontweight='heavy', fontvariant='small-caps', fontstyle='italic')
+        plt.title("WS: Census Plot: Density 0.10")
         plt.show()
 
 def plotPolarizationMeasures(model):
         df = model.datacollector.get_model_vars_dataframe()
         fig, ax = plt.subplots()
         ax.plot(df['PercentPolarized'], label="%Polarized", color='steelblue')
-        ax.set_title("Measures of Issue Alignment")
+        ax.set_title("WS: Measures of Issue Alignment: Density 0.10")
         ax.set_xlabel('Time (steps)')
         ax.set_ylabel('% polarized (# of clones+anticlones/ N choose 2)', color='steelblue')
         ax.set_yticks(np.arange(0,1.05,.1))
@@ -326,3 +338,5 @@ def plotPolarizationMeasures(model):
         ax2.axhline(y=0, linestyle = 'dotted')
         plt.annotate("Buckets: {}".format(len(model.buckets)), xy=(.9*model.steps,len(model.buckets)), fontsize='medium', fontweight='heavy', fontvariant='small-caps', fontstyle='italic')
         plt.show()
+def getDensity(model):
+    return nx.density(model.G)

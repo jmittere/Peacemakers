@@ -33,22 +33,12 @@ def cleanData(data):
 #suite = bvmSuite({"p":.3, "o":.20, "d":.50,"issues":3, "l_steps":1000, "n_agents":50, 'CI2':True}, 2)
 #suite.run()
 
-sweep = bvmSweep({"issues":3, "l_steps":1500,'CI2':True, 'd':.55, 'o':0.1, "n_agents":100},{"p":np.arange(0.05,1,.05)}, 5)
-#sweep.run()
-#data = sweep.getData()
+sweep = bvmSweep({"issues":4, "l_steps":1500,'CI2':True, 'd':.55, 'o':0.1, "n_agents":100},{"k":np.arange(2,45,1), "p":np.arange(0.05,0.60,0.1)}, 5)
+sweep.run()
+data = sweep.getData()
 
-#data.to_csv('CI2BucketsEdgeData3.csv')
-data = pd.read_csv('CI2BucketsEdgeData3.csv')
+data.to_csv('WSDensity.csv')
+#data = pd.read_csv('WSDensity.csv')
 print(data)
 
-sweep2 = bvmSweep({"issues":3, "l_steps":1500,'CI2':False, 'd':.55, 'o':0.1, "n_agents":100},{"p":np.arange(0.05,1,.05)}, 5)
-#sweep2.run()
-#data2 = sweep2.getData()
-
-#data2.to_csv('I2BucketsEdgeData3.csv')
-data2 = pd.read_csv('I2BucketsEdgeData3.csv')
-print(data2)
-
-#sweep.plotScatter("CI2: Buckets and Edge Probability, d:0.55 , o:0.1 , Agents:100, & issues:3",'CI2BucketsEdgeData3.csv')
-
-sweep2.plotScatter("I2: Buckets and Edge Probability, d:0.55 , o:0.1 , Agents:100, & issues:3",'I2BucketsEdgeData3.csv')
+sweep.plotScatter("WS: Buckets and Network Density",'WSDensity.csv')

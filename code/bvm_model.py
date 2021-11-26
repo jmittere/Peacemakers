@@ -81,7 +81,7 @@ class bvmModel(Model):
         autoGmmReporters = {"autogmmclustersforIssue_{}".format(i):lambda model, issueNum=i: doAutoGMM(model,issueNum) for i in range(self.num_issues)}
         reporters.update(autoGmmReporters)
         '''
-        #reporters = {}
+        reporters = {}
         self.datacollector = DataCollector(
                 model_reporters=reporters,
                 agent_reporters={}
@@ -89,11 +89,13 @@ class bvmModel(Model):
 
         #self.datacollector._new_model_reporter("numberOfNonUniformIssues",
         #    numNonUniformIssues)
+        '''
         for numAgreements in range(1,self.num_issues):
             self.datacollector._new_model_reporter(
                     f"num{numAgreements}AgreementPairs",
                     globals()[f"getNumAgentPairsWith{numAgreements}Agreements"])
 
+        '''
         self.datacollector.collect(self)
 
     def step(self):
@@ -135,7 +137,7 @@ class bvmModel(Model):
 if __name__ == "__main__":
 
     #lsteps, agents, p, issues, othresh, dthresh, CI2?
-    test = bvmModel(1000, 100, 0.15, 3, 0.10, .55, True)
+    test = bvmModel(1000, 100, 0.10, 3, 0.10, .55, True)
 
     for i in range(test.l_steps):
         test.step()
@@ -145,7 +147,8 @@ if __name__ == "__main__":
     df = test.datacollector.get_model_vars_dataframe()
     df.to_csv("singleRun.csv")
     print(df)
-    nx.draw(test.G, with_labels=True)
+    #nx.draw(test.G, with_labels=True)
+    print("Density: ", getDensity(test))
     getPercentPolarized(test)
     test.printBucketInfo()
     plotAgreementCensus(test)

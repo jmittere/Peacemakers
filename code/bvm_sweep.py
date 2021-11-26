@@ -1,4 +1,6 @@
 from bvm_model import *
+from ba_model import *
+from ws_model import *
 from model_functions import *
 from mesa.batchrunner import BatchRunner
 from mesa.batchrunner import BatchRunnerMP
@@ -8,11 +10,11 @@ class bvmSweep():
 
     def __init__(self, fixedParams,variableParams, iters):
         self.batch_run = BatchRunnerMP(
-                bvmModel, 
+                wsModel, 
                 fixed_parameters = fixedParams,
                 variable_parameters = variableParams,
                 iterations=iters,
-                model_reporters = {'Buckets':updateBuckets}
+                model_reporters = {'Buckets':updateBuckets, 'Density':getDensity}
                 )
         self.iterations = iters
 
@@ -49,13 +51,13 @@ class bvmSweep():
 
         fig,ax = plt.subplots()
         ax.set_title(title)
-        #seaborn.stripplot(x=data['n_agents'], y=data['Buckets'],jitter=True, ax = ax)
-        #seaborn.scatterplot(x=data['n_agents'], y=data['Buckets'],x_jitter=True, ax = ax,)
-        seaborn.regplot(x=data['p'], y=data['Buckets'],y_jitter=.45, fit_reg=False,ax = ax)
-        #plt.scatter(x=data['n_agents'], y=data['Buckets'], alpha=.7)
-        ax.set_xticks(np.arange(0,1.05, .1))
-        ax.set_xlabel('Edge Probability')
+
+        seaborn.regplot(x=data['Density'], y=data['Buckets'],y_jitter=.05,x_jitter=0.05, fit_reg=False,ax = ax)
+        #ax.scatter(x=data['Density'], y=data['Buckets'], alpha=.7)
+        ax.set_xticks(np.arange(0,0.55, .05))
+        #ax.set_yticks(np.arange(0,5, 1))
+        ax.set_xlabel('Density')
         ax.set_ylabel('Number of Buckets')
-        #plt.axhline(y=0, linestyle = 'dotted')
+        plt.axhline(y=2, linestyle = 'dotted')
         plt.show()
 

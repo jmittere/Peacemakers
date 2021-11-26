@@ -1,0 +1,14 @@
+Densities of 0.15:
+ER: p:0.15
+WS: k:15 p:0.15
+BA: m:8
+
+Densities of 0.10:
+ER: p:0.10
+WS: k:10 p:0.15
+BA: m:5
+
+Densities of 0.05:
+ER: p:0.05
+WS: k: p:
+BA: m:
